@@ -1,0 +1,20 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| Email Gönderildi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card p-5 text-center">
+            <i class="bi bi-envelope-paper" style="font-size:3rem;color:var(--primary)"></i>
+            <h3 class="fw-bold mt-3">Email Gönderildi!</h3>
+            <p class="text-secondary mt-2">
+                Kayıt olduğun email adresine doğrulama linki gönderdik.
+                Lütfen emailini kontrol et ve hesabını aktive et.
+            </p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">
+                <i class="bi bi-house"></i> Ana Sayfaya Dön
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

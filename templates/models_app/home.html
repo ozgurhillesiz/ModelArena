@@ -1,0 +1,270 @@
+{% extends 'models_app/base.html' %}
+{% load static %}
+{% block title %}| Modeller{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1 class="fw-bold mb-2"><img src="{% static 'img/logo.svg' %}" style="width:40px;height:40px;"> ModelArena</h1>
+    <p class="text-secondary mb-4">AI modellerini karşılaştır, fiyatları takip et, en iyisini seç.</p>
+    <div class="row g-3">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ models.paginator.count }}</div>
+                <div class="text-secondary">Model</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ companies|length }}</div>
+                <div class="text-secondary">Şirket</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">₺{{ usd_to_try }}</div>
+                <div class="text-secondary">1 USD</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">₺{{ eur_to_try }}</div>
+                <div class="text-secondary">1 EUR</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card p-3 mb-4" style="border-left:3px solid var(--primary);">
+    <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-info-circle-fill" style="color:var(--primary);font-size:1.5rem;flex-shrink:0;margin-top:2px;"></i>
+        <div>
+            <h6 class="fw-bold mb-1">Token nedir?</h6>
+            <p class="text-secondary small mb-0">Token, yapay zekaların metni işleme birimidir. Kabaca <strong>1 token ≈ 0.75 kelime</strong> demektir. Yani <strong>1 milyon token ≈ 750.000 kelime</strong> eder. AI fiyatları genellikle her 1 milyon token başına dolar olarak hesaplanır — soru ve cevap fiyatları ayrı ayrı uygulanır.</p>
+        </div>
+    </div>
+</div>
+
+{% if top_rated %}
+<div class="mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning"></i> En Çok Puanlanan Modeller</h5>
+    <div class="row g-3">
+        {% for model in top_rated %}
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'model_detail' model.pk %}" class="text-decoration-none">
+                <div class="card p-3 d-flex flex-row align-items-center gap-3">
+                    <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                         style="width:40px;height:40px;object-fit:contain;border-radius:8px;flex-shrink:0;"
+                         onerror="this.style.display='none'">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold" style="color:#ffffff;">{{ model.name }}</div>
+                        <small class="text-secondary">{{ model.company }}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="price-tag" style="font-size:1rem;">{{ model.avg_rating|floatformat:1 }}</div>
+                        <small class="text-secondary">/ 5 ⭐</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if most_favorited %}
+<div class="mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-heart-fill text-danger"></i> En Çok Favorilenen Modeller</h5>
+    <div class="row g-3">
+        {% for model in most_favorited %}
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'model_detail' model.pk %}" class="text-decoration-none">
+                <div class="card p-3 d-flex flex-row align-items-center gap-3">
+                    <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                         style="width:40px;height:40px;object-fit:contain;border-radius:8px;flex-shrink:0;"
+                         onerror="this.style.display='none'">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold" style="color:#ffffff;">{{ model.name }}</div>
+                        <small class="text-secondary">{{ model.company }}</small>
+                    </div>
+                    <div>
+                        {% if model.is_free %}
+                        <span class="badge-free">Ücretsiz</span>
+                        {% endif %}
+                        {% if model.is_multimodal %}
+                        <span class="badge-multimodal">Multimodal</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="search-bar mb-4">
+    <form method="get" class="row g-2">
+        <div class="col-md-4">
+            <input type="text" name="search" id="search-input" class="form-control" placeholder="Model ara..." value="{{ search }}">
+        </div>
+        <div class="col-md-2">
+            <select name="company" class="form-select">
+                <option value="">Tüm Şirketler</option>
+                {% for c in companies %}
+                <option value="{{ c }}" {% if request.GET.company == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="is_free" class="form-select">
+                <option value="">Tümü</option>
+                <option value="1" {% if request.GET.is_free %}selected{% endif %}>Ücretsiz</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="is_multimodal" class="form-select">
+                <option value="">Tüm Tipler</option>
+                <option value="1" {% if request.GET.is_multimodal %}selected{% endif %}>Multimodal</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="sort" class="form-select">
+                <option value="" {% if not request.GET.sort %}selected{% endif %}>Sırala...</option>
+                <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>💰 Fiyat (Ucuzdan)</option>
+                <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>💰 Fiyat (Pahalıdan)</option>
+                <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>⭐ En Çok Puanlanan</option>
+                <option value="context" {% if request.GET.sort == 'context' %}selected{% endif %}>📄 Context Window</option>
+                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>🆕 En Yeni</option>
+            </select>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Ara & Filtrele
+            </button>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-x"></i> Temizle
+            </a>
+        </div>
+    </form>
+</div>
+
+<div class="row g-4" id="model-grid">
+    {% for model in models %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="{{ model.image_url }}"
+                         alt="{{ model.name }}"
+                         style="width:36px;height:36px;object-fit:contain;border-radius:8px;"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="model-avatar avatar-{{ model.company|lower|slugify }}" style="display:none;">
+                        {{ model.company|first }}
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">{{ model.name }}</h5>
+                        <small class="text-secondary">{{ model.company }}</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-1 flex-wrap justify-content-end">
+                    {% if model.is_multimodal %}
+                    <span class="badge-multimodal">Multimodal</span>
+                    {% endif %}
+                    {% if model.is_free %}
+                    <span class="badge-free">Ücretsiz</span>
+                    {% endif %}
+                </div>
+            </div>
+            <p class="text-secondary small mb-2">{{ model.description|truncatewords:20 }}</p>
+            
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <div>
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= model.average_rating %}
+                    <i class="bi bi-star-fill text-warning" style="font-size:0.8rem"></i>
+                    {% else %}
+                    <i class="bi bi-star text-secondary" style="font-size:0.8rem"></i>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <small class="text-secondary">{{ model.average_rating }}/5 ({{ model.review_count }} yorum)</small>
+            </div>
+
+            <div class="d-flex gap-3 mb-2">
+                <small class="text-secondary">
+                    <i class="bi bi-window"></i> {{ model.context_window }}k context
+                </small>
+                <small class="text-secondary">
+                    {% if model.is_free %}
+                    <i class="bi bi-check-circle text-success"></i> Ücretsiz
+                    {% else %}
+                    <i class="bi bi-currency-dollar text-warning"></i> Ücretli
+                    {% endif %}
+                </small>
+            </div>
+
+            <div class="mb-2">
+                {% with paid_plans=model.plans.all %}
+                {% for plan in paid_plans %}
+                {% if not plan.is_free and forloop.first %}
+                <small class="text-secondary">
+                    <i class="bi bi-credit-card"></i> Abonelik:
+                    <span class="price-tag" style="font-size:0.85rem;">${{ plan.price }}/ay</span>
+                    <span class="text-secondary">({{ plan.name }})</span>
+                </small>
+                {% endif %}
+                {% endfor %}
+                {% for plan in paid_plans %}
+                {% if plan.is_free %}
+                <small class="text-success d-block">
+                    <i class="bi bi-check-circle"></i> Ücretsiz plan mevcut
+                </small>
+                {% endif %}
+                {% endfor %}
+                {% endwith %}
+            </div>
+
+            <div class="d-flex gap-2 mt-auto">
+                <a href="{% url 'model_detail' model.pk %}" class="btn btn-primary btn-sm flex-grow-1">
+                    <i class="bi bi-info-circle"></i> Detay
+                </a>
+                <a href="{% url 'compare' %}?models={{ model.pk }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-bar-chart"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center text-secondary py-5">
+        <i class="bi bi-search" style="font-size:3rem"></i>
+        <p class="mt-3">Model bulunamadı.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="d-flex justify-content-center mt-4">
+    <nav>
+        <ul class="pagination">
+            {% if models.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ models.previous_page_number }}&search={{ search }}&company={{ request.GET.company }}&is_free={{ request.GET.is_free }}&is_multimodal={{ request.GET.is_multimodal }}&sort={{ request.GET.sort }}">Önceki</a>
+            </li>
+            {% endif %}
+            {% for i in models.paginator.page_range %}
+            <li class="page-item {% if models.number == i %}active{% endif %}">
+                <a class="page-link" href="?page={{ i }}&search={{ search }}&company={{ request.GET.company }}&is_free={{ request.GET.is_free }}&is_multimodal={{ request.GET.is_multimodal }}&sort={{ request.GET.sort }}">{{ i }}</a>
+            </li>
+            {% endfor %}
+            {% if models.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ models.next_page_number }}&search={{ search }}&company={{ request.GET.company }}&is_free={{ request.GET.is_free }}&is_multimodal={{ request.GET.is_multimodal }}&sort={{ request.GET.sort }}">Sonraki</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/search.js' %}"></script>
+{% endblock %}

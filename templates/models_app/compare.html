@@ -1,0 +1,223 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| Karşılaştır{% endblock %}
+
+{% block content %}
+<h2 class="fw-bold mb-4"><i class="bi bi-bar-chart"></i> Model Karşılaştır</h2>
+
+<div class="card p-4 mb-4">
+    <form method="get" class="row g-2">
+        {% for model in all_models %}
+        <div class="col-6 col-md-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="models" value="{{ model.pk }}"
+                    {% if model in selected_models %}checked{% endif %}>
+                <label class="form-check-label d-flex align-items-center gap-2">
+                    <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                         style="width:20px;height:20px;object-fit:contain;"
+                         onerror="this.style.display='none';">
+                    {{ model.name }}
+                </label>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-bar-chart"></i> Karşılaştır
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if selected_models %}
+<div class="card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-table"></i> Genel Karşılaştırma</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Özellik</th>
+                    {% for model in selected_models %}
+                    <th class="text-center">
+                        <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                             style="width:28px;height:28px;object-fit:contain;"
+                             onerror="this.style.display='none';">
+                        <div>{{ model.name }}</div>
+                        <small class="text-secondary">{{ model.company }}</small>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Soru Fiyatı</td>
+                    {% for model in selected_models %}
+                    <td class="text-center price-tag">
+                        {% if model.is_free %}Ücretsiz{% else %}${{ model.input_price_per_million }}{% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Cevap Fiyatı</td>
+                    {% for model in selected_models %}
+                    <td class="text-center price-tag">
+                        {% if model.is_free %}Ücretsiz{% else %}${{ model.output_price_per_million }}{% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Context Window</td>
+                    {% for model in selected_models %}
+                    <td class="text-center">{{ model.context_window }}k token</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Multimodal</td>
+                    {% for model in selected_models %}
+                    <td class="text-center">
+                        {% if model.is_multimodal %}
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        {% else %}
+                        <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Ücretsiz</td>
+                    {% for model in selected_models %}
+                    <td class="text-center">
+                        {% if model.is_free %}
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        {% else %}
+                        <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>API Erişimi</td>
+                    {% for model in selected_models %}
+                    <td class="text-center">
+                        {% if model.api_available %}
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        {% else %}
+                        <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Çıkış Tarihi</td>
+                    {% for model in selected_models %}
+                    <td class="text-center">{{ model.release_date }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-credit-card"></i> Abonelik Planları Karşılaştırması</h5>
+    <div class="row g-4">
+        {% for model in selected_models %}
+        <div class="col-md-6">
+            <div class="card p-3">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                         style="width:32px;height:32px;object-fit:contain;"
+                         onerror="this.style.display='none';">
+                    <h6 class="fw-bold mb-0" style="color:#ffffff;">{{ model.name }}</h6>
+                </div>
+                {% for plan in model.plans.all %}
+                <div class="d-flex justify-content-between align-items-start mb-2 p-2 rounded"
+                     style="background:{% if plan.is_free %}rgba(16,185,129,0.1){% else %}rgba(108,99,255,0.1){% endif %};border:1px solid {% if plan.is_free %}rgba(16,185,129,0.3){% else %}rgba(108,99,255,0.3){% endif %};">
+                    <div>
+                        <div class="fw-bold small" style="color:#ffffff;">{{ plan.name }}</div>
+                        {% for feature in plan.feature_list %}
+                        <small class="text-secondary d-block"><i class="bi bi-check2 text-success"></i> {{ feature }}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="text-end ms-2">
+                        {% if plan.is_free %}
+                        <span class="badge-free">Ücretsiz</span>
+                        {% else %}
+                        <span class="price-tag" style="font-size:0.9rem;">${{ plan.price }}</span>
+                        <small class="text-secondary d-block">/ay</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-secondary small">Plan bilgisi yok.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-graph-up"></i> Fiyat Karşılaştırması</h5>
+    <canvas id="compareChart"></canvas>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if selected_models %}
+<script>
+const isDark = !document.getElementById('body').classList.contains('light-mode');
+const textColor = isDark ? '#e0e0e0' : '#1a1a2e';
+const gridColor = isDark ? '#2a2a4a' : '#e0e0f0';
+
+const ctx = document.getElementById('compareChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for model in selected_models %}'{{ model.name }}',{% endfor %}],
+        datasets: [
+            {
+                label: 'Soru Fiyatı ($/1M token)',
+                data: [{% for model in selected_models %}{{ model.input_price_per_million }},{% endfor %}],
+                backgroundColor: 'rgba(108, 99, 255, 0.8)',
+                borderColor: 'rgba(108, 99, 255, 1)',
+                borderWidth: 1,
+                borderRadius: 8,
+            },
+            {
+                label: 'Cevap Fiyatı ($/1M token)',
+                data: [{% for model in selected_models %}{{ model.output_price_per_million }},{% endfor %}],
+                backgroundColor: 'rgba(168, 85, 247, 0.8)',
+                borderColor: 'rgba(168, 85, 247, 1)',
+                borderWidth: 1,
+                borderRadius: 8,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: textColor,
+                    font: { size: 13, weight: 'bold' },
+                    padding: 20,
+                    boxWidth: 20,
+                }
+            }
+        },
+        scales: {
+            y: {
+                grid: { color: gridColor },
+                ticks: { color: textColor, font: { size: 12 } }
+            },
+            x: {
+                grid: { color: gridColor },
+                ticks: { color: textColor, font: { size: 12 } }
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

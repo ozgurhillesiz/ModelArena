@@ -1,0 +1,387 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| {{ ai_model.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ ai_model.image_url }}"
+                         alt="{{ ai_model.name }}"
+                         style="width:56px;height:56px;object-fit:contain;border-radius:12px;"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="model-avatar avatar-{{ ai_model.company|lower|slugify }}" style="display:none;">
+                        {{ ai_model.company|first }}
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0" style="font-size:1.8rem;color:#ffffff;">{{ ai_model.name }}</h2>
+                        <span class="text-secondary">{{ ai_model.company }}</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    {% if ai_model.is_multimodal %}
+                    <span class="badge-multimodal">Multimodal</span>
+                    {% endif %}
+                    {% if ai_model.is_free %}
+                    <span class="badge-free">Ücretsiz</span>
+                    {% endif %}
+                </div>
+            </div>
+            <p class="text-secondary">{{ ai_model.description }}</p>
+
+            <div class="row g-3 mt-2">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="text-secondary small">Soru Fiyatı</div>
+                        <div class="price-tag">{% if ai_model.is_free %}Ücretsiz{% else %}${{ ai_model.input_price_per_million }}{% endif %}</div>
+                        <div class="text-secondary" style="font-size:0.7rem">/ 1M token</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="text-secondary small">Cevap Fiyatı</div>
+                        <div class="price-tag">{% if ai_model.is_free %}Ücretsiz{% else %}${{ ai_model.output_price_per_million }}{% endif %}</div>
+                        <div class="text-secondary" style="font-size:0.7rem">/ 1M token</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="text-secondary small">Context</div>
+                        <div class="price-tag">{{ ai_model.context_window }}k</div>
+                        <div class="text-secondary" style="font-size:0.7rem">token</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="text-secondary small">Puan</div>
+                        <div class="price-tag">{{ ai_model.average_rating }}/5</div>
+                        <div class="text-secondary" style="font-size:0.7rem">{{ ai_model.review_count }} yorum</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+                <a href="{% url 'compare' %}?models={{ ai_model.pk }}" class="btn btn-primary">
+                    <i class="bi bi-bar-chart"></i> Karşılaştır
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'toggle_favorite' ai_model.pk %}" class="btn btn-outline-primary">
+                    {% if is_favorite %}
+                    <i class="bi bi-heart-fill text-danger"></i> Favoriden Çıkar
+                    {% else %}
+                    <i class="bi bi-heart"></i> Favoriye Ekle
+                    {% endif %}
+                </a>
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#recommendModal">
+                    <i class="bi bi-share"></i> Arkadaşına Öner
+                </button>
+                {% endif %}
+                {% if ai_model.website_url %}
+                <a href="{{ ai_model.website_url }}" target="_blank" class="btn btn-outline-secondary">
+                    <i class="bi bi-box-arrow-up-right"></i> Resmi Site
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if plans %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-credit-card"></i> Abonelik Planları</h5>
+            <div class="row g-3">
+                {% for plan in plans %}
+                <div class="col-md-6">
+                    <div class="card p-3 h-100" style="border: 1px solid {% if plan.is_free %}#10b981{% else %}var(--card-border){% endif %};">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold mb-0" style="color:#ffffff;">{{ plan.name }}</h6>
+                            {% if plan.is_free %}
+                            <span class="badge-free">Ücretsiz</span>
+                            {% else %}
+                            <span class="price-tag" style="font-size:1rem;">${{ plan.price }}/ay</span>
+                            {% endif %}
+                        </div>
+                        {% if plan.features %}
+                        <ul class="list-unstyled mb-0 mt-2">
+                            {% for feature in plan.feature_list %}
+                            <li class="text-secondary small mb-1">
+                                <i class="bi bi-check2 text-success"></i> {{ feature }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <small class="text-secondary mt-3 d-block">
+                <i class="bi bi-info-circle"></i> Abonelik planları bireysel kullanıcılar içindir. Geliştiriciler için API fiyatları yukarıda gösterilmektedir.
+            </small>
+        </div>
+        {% endif %}
+
+        {% if benchmarks %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-trophy"></i> Benchmark Sonuçları</h5>
+            <canvas id="benchmarkChart"></canvas>
+
+            <div class="mt-4 p-3 rounded" style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);">
+                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu Testler Ne Anlama Geliyor?</h6>
+                <p class="text-secondary small mb-3">Benchmark testleri AI modellerinin farklı alanlardaki performansını ölçen standart sınavlardır. 100 üzerinden puanlanır — yüksek puan daha iyi performans anlamına gelir.</p>
+                <div class="row g-2">
+                    {% for b in benchmarks %}
+                    <div class="col-md-6">
+                        <div class="p-2 rounded" style="background:rgba(108,99,255,0.1);">
+                            {% if b.benchmark_name == "MMLU" %}
+                            <div class="fw-bold small" style="color:#ffffff;">📚 MMLU — {{ b.score }}/100</div>
+                            <small class="text-secondary">57 farklı alanda (matematik, tarih, hukuk, tıp vb.) genel bilgi testi. Modelin ne kadar geniş bir bilgiye sahip olduğunu ölçer.</small>
+                            {% elif b.benchmark_name == "HumanEval" %}
+                            <div class="fw-bold small" style="color:#ffffff;">💻 HumanEval — {{ b.score }}/100</div>
+                            <small class="text-secondary">164 programlama sorusundan oluşan kod yazma testi. Modelin ne kadar iyi kod yazabildiğini ölçer.</small>
+                            {% elif b.benchmark_name == "MATH" %}
+                            <div class="fw-bold small" style="color:#ffffff;">🧮 MATH — {{ b.score }}/100</div>
+                            <small class="text-secondary">Lise ve üniversite düzeyinde matematik problemleri. Modelin matematiksel akıl yürütme yeteneğini ölçer.</small>
+                            {% elif b.benchmark_name == "HellaSwag" %}
+                            <div class="fw-bold small" style="color:#ffffff;">🔬 HellaSwag — {{ b.score }}/100</div>
+                            <small class="text-secondary">Günlük durumları anlama ve mantıksal çıkarım testi. Modelin insan gibi düşünüp düşünemediğini ölçer.</small>
+                            {% elif b.benchmark_name == "GSM8K" %}
+                            <div class="fw-bold small" style="color:#ffffff;">🎯 GSM8K — {{ b.score }}/100</div>
+                            <small class="text-secondary">İlkokul düzeyinde matematik sözel problemleri. Modelin adım adım problem çözme yeteneğini ölçer.</small>
+                            {% elif b.benchmark_name == "TruthfulQA" %}
+                            <div class="fw-bold small" style="color:#ffffff;">⚖️ TruthfulQA — {{ b.score }}/100</div>
+                            <small class="text-secondary">Modelin ne kadar doğru ve güvenilir bilgi verdiğini ölçen test. Yanlış bilgi üretme eğilimini test eder.</small>
+                            {% elif b.benchmark_name == "ARC" %}
+                            <div class="fw-bold small" style="color:#ffffff;">🔭 ARC — {{ b.score }}/100</div>
+                            <small class="text-secondary">İlk ve ortaokul düzeyinde fen bilimleri soruları. Modelin bilimsel akıl yürütme yeteneğini ölçer.</small>
+                            {% elif b.benchmark_name == "WinoGrande" %}
+                            <div class="fw-bold small" style="color:#ffffff;">🧩 WinoGrande — {{ b.score }}/100</div>
+                            <small class="text-secondary">Dil anlama ve bağlamsal akıl yürütme testi. Modelin cümlelerdeki belirsizlikleri çözüp çözemediğini ölçer.</small>
+                            {% else %}
+                            <div class="fw-bold small" style="color:#ffffff;">📊 {{ b.benchmark_name }} — {{ b.score }}/100</div>
+                            <small class="text-secondary">AI modelinin bu alandaki performans testi. Yüksek puan daha iyi performans anlamına gelir.</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if price_history %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-graph-up"></i> Fiyat Geçmişi</h5>
+            <canvas id="priceChart"></canvas>
+            <div class="mt-3 p-3 rounded" style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);">
+                <p class="text-secondary small mb-0"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu grafik modelin API fiyatının zaman içinde nasıl değiştiğini gösterir. Mavi çizgi soru fiyatını, mor çizgi cevap fiyatını temsil eder. Fiyatlar 1 milyon token başına dolar cinsindendir.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-chat-dots"></i> Yorumlar ({{ ai_model.review_count }})</h5>
+
+            {% if user.is_authenticated %}
+                {% if not user_review %}
+                <form method="post" action="{% url 'add_review' ai_model.pk %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Puan</label>
+                        <select name="rating" class="form-select">
+                            <option value="5">⭐⭐⭐⭐⭐ Mükemmel</option>
+                            <option value="4">⭐⭐⭐⭐ İyi</option>
+                            <option value="3">⭐⭐⭐ Orta</option>
+                            <option value="2">⭐⭐ Kötü</option>
+                            <option value="1">⭐ Çok Kötü</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Yorumun</label>
+                        <textarea name="comment" class="form-control" rows="3" placeholder="Bu model hakkında ne düşünüyorsun?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Yorum Yap
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-secondary mb-4">
+                    Bu modeli zaten puanladın. <a href="{% url 'delete_review' user_review.pk %}" class="text-danger">Yorumunu sil</a>
+                </div>
+                {% endif %}
+            {% else %}
+            <p class="text-secondary mb-4">Yorum yapmak için <a href="{% url 'account_login' %}" class="text-primary">giriş yap</a>.</p>
+            {% endif %}
+
+            {% for review in reviews %}
+            <div class="card p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="fw-bold">{{ review.user.username }}</span>
+                        <span class="text-secondary ms-2" style="font-size:0.8rem">{{ review.created_at|date:"d M Y" }}</span>
+                    </div>
+                    <div>
+                        {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                        <i class="bi bi-star-fill text-warning"></i>
+                        {% else %}
+                        <i class="bi bi-star text-secondary"></i>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="text-secondary mt-2 mb-0">{{ review.comment }}</p>
+                {% if user == review.user %}
+                <div class="mt-2">
+                    <a href="{% url 'delete_review' review.pk %}" class="text-danger small">
+                        <i class="bi bi-trash"></i> Sil
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-secondary">Henüz yorum yok. İlk yorumu sen yap!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3">Özellikler</h5>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="bi bi-check-circle {% if ai_model.is_multimodal %}text-success{% else %}text-secondary{% endif %}"></i>
+                    Multimodal
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle {% if ai_model.is_free %}text-success{% else %}text-secondary{% endif %}"></i>
+                    Ücretsiz Kullanım
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle {% if ai_model.api_available %}text-success{% else %}text-secondary{% endif %}"></i>
+                    API Erişimi
+                </li>
+            </ul>
+        </div>
+
+        {% if ai_model.parameters %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-cpu"></i> Parametre Sayısı</h5>
+            <div class="price-tag" style="font-size:1.5rem;">{{ ai_model.parameters }}</div>
+            <small class="text-secondary">parametre</small>
+        </div>
+        {% endif %}
+
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3">Çıkış Tarihi</h5>
+            <p class="price-tag">{{ ai_model.release_date }}</p>
+        </div>
+
+        {% if ai_model.website_url %}
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-globe"></i> Resmi Site</h5>
+            <a href="{{ ai_model.website_url }}" target="_blank" class="btn btn-outline-primary w-100">
+                <i class="bi bi-box-arrow-up-right"></i> Siteye Git
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="modal fade" id="recommendModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:var(--card-bg);border:1px solid var(--card-border);">
+            <div class="modal-header" style="border-color:var(--card-border);">
+                <h5 class="modal-title fw-bold"><i class="bi bi-share"></i> Arkadaşına Öner</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary">{{ ai_model.name }} modelini bir arkadaşına öner. Kullanıcı adını gir, bildirim gönderilecek.</p>
+                <form method="post" action="{% url 'recommend_model' ai_model.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Kullanıcı Adı</label>
+                        <input type="text" name="username" class="form-control" placeholder="Kullanıcı adı..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-send"></i> Öneriyi Gönder
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if benchmarks %}
+<script>
+const bCtx = document.getElementById('benchmarkChart').getContext('2d');
+new Chart(bCtx, {
+    type: 'bar',
+    data: {
+        labels: [{% for b in benchmarks %}'{{ b.benchmark_name }}',{% endfor %}],
+        datasets: [{
+            label: 'Skor',
+            data: [{% for b in benchmarks %}{{ b.score }},{% endfor %}],
+            backgroundColor: 'rgba(108, 99, 255, 0.7)',
+            borderRadius: 8,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, max: 100, grid: { color: '#2a2a4a' }, ticks: { color: '#e0e0e0' } },
+            x: { grid: { color: '#2a2a4a' }, ticks: { color: '#e0e0e0' } }
+        }
+    }
+});
+</script>
+{% endif %}
+
+{% if price_history %}
+<script>
+const pCtx = document.getElementById('priceChart').getContext('2d');
+new Chart(pCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for p in price_history %}'{{ p.date }}',{% endfor %}],
+        datasets: [
+            {
+                label: 'Soru Fiyatı',
+                data: [{% for p in price_history %}{{ p.input_price }},{% endfor %}],
+                borderColor: '#6c63ff',
+                backgroundColor: 'rgba(108,99,255,0.1)',
+                tension: 0.4,
+                fill: true,
+            },
+            {
+                label: 'Cevap Fiyatı',
+                data: [{% for p in price_history %}{{ p.output_price }},{% endfor %}],
+                borderColor: '#a855f7',
+                backgroundColor: 'rgba(168,85,247,0.1)',
+                tension: 0.4,
+                fill: true,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                grid: { color: '#2a2a4a' },
+                ticks: {
+                    color: '#e0e0e0',
+                    callback: function(value) {
+                        return '$' + (value * 1000000).toFixed(2);
+                    }
+                }
+            },
+            x: { grid: { color: '#2a2a4a' }, ticks: { color: '#e0e0e0' } }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| Kayıt{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus" style="font-size:2.5rem;color:var(--primary)"></i>
+                <h3 class="fw-bold mt-2">Hesap Oluştur</h3>
+                <p class="text-secondary">ModelArena topluluğuna katıl</p>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label text-secondary">{{ field.label }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background:var(--card-bg);border-color:var(--card-border);color:var(--primary)">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                    <div class="text-danger small mt-1">{{ field.errors }}</div>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <div class="text-secondary small mt-1">{{ field.help_text }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100 py-2 mt-2">
+                    <i class="bi bi-person-check"></i> Kayıt Ol
+                </button>
+            </form>
+            <p class="text-center text-secondary mt-4">
+                Hesabın var mı? <a href="{% url 'login' %}" class="text-primary fw-bold">Giriş Yap</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,665 @@
+:root {
+    --primary: #6c63ff;
+    --dark: #0f0f1a;
+    --card-bg: #1a1a2e;
+    --card-border: #2a2a4a;
+}
+
+body {
+    background-color: var(--dark);
+    color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+    color: var(--primary) !important;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(108, 99, 255, 0.2);
+}
+
+.badge-multimodal {
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.badge-free {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.price-tag {
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.search-bar input {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.search-bar input:focus {
+    background: var(--card-bg);
+    border-color: var(--primary);
+    color: #e0e0e0;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background: #5a52d5;
+}
+
+.btn-outline-primary {
+    border-color: var(--primary);
+    color: var(--primary);
+    border-radius: 8px;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.form-control, .form-select {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.form-control:focus, .form-select:focus {
+    background: var(--card-bg);
+    border-color: var(--primary);
+    color: #e0e0e0;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+.table {
+    color: #e0e0e0;
+}
+
+.table-dark {
+    background: var(--card-bg);
+}
+
+.hero {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 16px;
+    padding: 48px;
+    margin-bottom: 32px;
+    border: 1px solid var(--card-border);
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.model-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.avatar-openai { background: #10a37f; color: white; }
+.avatar-anthropic { background: #d97757; color: white; }
+.avatar-google { background: #4285f4; color: white; }
+.avatar-meta { background: #0082fb; color: white; }
+.avatar-mistral { background: #ff7000; color: white; }
+.avatar-microsoft { background: #00a4ef; color: white; }
+.avatar-perplexity { background: #20b2aa; color: white; }
+.avatar-deepseek { background: #4d6fff; color: white; }
+.avatar-xai { background: #ffffff; color: black; }
+
+.pagination .page-link {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--primary);
+    border-radius: 8px;
+    margin: 0 3px;
+}
+
+.pagination .page-link:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+bbody.light-mode {
+    background-color: #f0f0f5 !important;
+    color: #1a1a2e !important;
+}
+
+body.light-mode .navbar {
+    background: linear-gradient(135deg, #e0e0f0, #d0d0e8) !important;
+    border-bottom: 1px solid #c0c0d8 !important;
+}
+
+body.light-mode .card {
+    background: #ffffff !important;
+    border: 1px solid #e0e0f0 !important;
+}
+
+body.light-mode .stat-card {
+    background: #ffffff !important;
+    border: 1px solid #e0e0f0 !important;
+}
+
+body.light-mode .hero {
+    background: linear-gradient(135deg, #e0e0f0, #d0d0e8) !important;
+    border: 1px solid #c0c0d8 !important;
+}
+
+body.light-mode .form-control,
+body.light-mode .form-select {
+    background: #ffffff !important;
+    border: 1px solid #c0c0d8 !important;
+    color: #1a1a2e !important;
+}
+
+body.light-mode .table {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .table-dark {
+    background: #ffffff !important;
+    color: #1a1a2e !important;
+}
+
+body.light-mode .nav-link {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .text-secondary {
+    color: #555577 !important;
+}
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--card-border);
+    color: #e0e0e0;
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+body.light-mode .theme-toggle {
+    color: #1a1a2e;
+    border-color: #c0c0d8;
+}
+
+.theme-switch {
+    width: 52px;
+    height: 28px;
+    background: var(--card-border);
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.theme-switch.active {
+    background: var(--primary);
+}
+
+.theme-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+    font-size: 11px;
+    color: var(--primary);
+}
+
+.theme-switch.active .theme-switch-thumb {
+    transform: translateX(24px);
+    color: var(--primary);
+}
+
+
+/* Logo light modda görünsün */
+body.light-mode .navbar-brand {
+    color: var(--primary) !important;
+}
+
+body.light-mode .navbar-brand i {
+    color: var(--primary) !important;
+}
+
+/* Koyu modda model isimleri daha belirgin */
+.card h5.fw-bold {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body.light-mode .card h5.fw-bold {
+    color: #1a1a2e !important;
+    text-shadow: none;
+}
+
+
+body.light-mode .navbar {
+    background: linear-gradient(135deg, #2a2a4a, #1a1a2e) !important;
+}
+
+body.light-mode .navbar-brand {
+    color: #6c63ff !important;
+}
+
+body.light-mode .navbar-brand i {
+    color: #6c63ff !important;
+}
+
+body.light-mode .nav-link {
+    color: #e0e0e0 !important;
+}
+
+body.light-mode .hero h1 {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .hero p {
+    color: #444466 !important;
+}
+
+
+/* Animasyonlar */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.navbar {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.hero {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+.card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+}
+
+.card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 0 1px rgba(108, 99, 255, 0.4), 0 16px 32px rgba(108, 99, 255, 0.25);
+}
+
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+}
+
+.navbar-brand {
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.card ul.list-unstyled li {
+    color: #e0e0e0 !important;
+}
+
+body.light-mode .card ul.list-unstyled li {
+    color: #1a1a2e !important;
+}
+
+.footer {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-top: 1px solid var(--card-border);
+    padding: 40px 0 20px;
+    margin-top: 60px;
+}
+
+.footer-link {
+    color: #a0a0c0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.footer-link:hover {
+    color: var(--primary);
+}
+
+body.light-mode .footer {
+    background: linear-gradient(135deg, #2a2a4a, #1a1a2e);
+}
+
+/* Karşılaştır sayfası koyu mod yazılar */
+.table-dark td, .table-dark th {
+    color: #e0e0e0 !important;
+}
+
+/* Karşılaştır sayfası açık mod */
+body.light-mode .table-dark {
+    background: #ffffff !important;
+    color: #1a1a2e !important;
+}
+
+body.light-mode .table-dark td,
+body.light-mode .table-dark th {
+    color: #1a1a2e !important;
+    border-color: #e0e0f0 !important;
+}
+
+/* Form check label rengi */
+.form-check-label {
+    color: #e0e0e0 !important;
+}
+
+body.light-mode .form-check-label {
+    color: #1a1a2e !important;
+}
+
+.table-dark td:first-child {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.table-dark thead th {
+    color: #ffffff !important;
+}
+
+.table {
+    background: var(--card-bg) !important;
+}
+
+.table td, .table th {
+    background: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: #e0e0e0 !important;
+}
+
+body.light-mode .table td,
+body.light-mode .table th {
+    background: #ffffff !important;
+    border-color: #e0e0f0 !important;
+    color: #1a1a2e !important;
+}
+
+.table .price-tag {
+    color: var(--primary) !important;
+}
+
+.form-check-label span, 
+.form-check label span {
+    color: #e0e0e0 !important;
+}
+
+body.light-mode .form-check-label span,
+body.light-mode .form-check label span {
+    color: #1a1a2e !important;
+}
+
+.recommend-option {
+    color: #e0e0e0 !important;
+}
+
+body.light-mode .recommend-option {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .recommend-label span,
+body.light-mode label span {
+    color: #1a1a2e !important;
+}
+
+body.light-mode label {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .card .form-label {
+    color: #1a1a2e !important;
+}
+
+.recommend-item {
+    border: 1px solid var(--card-border);
+    cursor: pointer;
+    color: var(--color-text-primary);
+}
+
+.recommend-item span {
+    color: var(--bs-body-color);
+}
+
+body.light-mode .recommend-item span {
+    color: #1a1a2e !important;
+}
+
+.recommend-item span {
+    color: var(--color-text-primary) !important;
+}
+
+.recommend-item .form-label {
+    color: var(--color-text-primary) !important;
+}
+
+body.light-mode .hero h2 {
+    color: #1a1a2e !important;
+}
+
+/* Koyu modda recommend yazıları */
+.recommend-item span {
+    color: #e0e0e0 !important;
+}
+
+/* Açık modda recommend yazıları */
+body.light-mode .recommend-item span {
+    color: #1a1a2e !important;
+}
+
+/* Açık modda hero başlığı */
+body.light-mode .hero h1,
+body.light-mode .hero h2,
+body.light-mode .hero h3 {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .card .form-label,
+body.light-mode .card label.form-label {
+    color: #1a1a2e !important;
+}
+
+/* Token nedir kartı */
+.card strong {
+    color: var(--primary) !important;
+}
+
+body.light-mode .card strong {
+    color: #5a52d5 !important;
+}
+
+/* Token nedir başlığı */
+.card h6.fw-bold {
+    color: #ffffff !important;
+}
+
+body.light-mode .card h6.fw-bold {
+    color: #1a1a2e !important;
+}
+
+/* Arama kutusu placeholder */
+#search-input::placeholder {
+    color: #a0a0c0 !important;
+}
+
+/* Genel metin rengi düzeltmeleri */
+.card p, .card span, .card div, .card small, .card li {
+    color: var(--bs-body-color);
+}
+
+body:not(.light-mode) .card p,
+body:not(.light-mode) .card span,
+body:not(.light-mode) .card div,
+body:not(.light-mode) .card small,
+body:not(.light-mode) .card li {
+    color: #e0e0e0;
+}
+
+body.light-mode .card p,
+body.light-mode .card span,
+body.light-mode .card div,
+body.light-mode .card small,
+body.light-mode .card li {
+    color: #1a1a2e;
+}
+
+/* Bildirim yazıları */
+body:not(.light-mode) .card .flex-grow-1 p {
+    color: #e0e0e0 !important;
+}
+
+/* Textarea placeholder */
+textarea::placeholder {
+    color: #a0a0c0 !important;
+}
+
+body.light-mode textarea::placeholder {
+    color: #6c6c8a !important;
+}
+
+/* Textarea yazı rengi */
+body:not(.light-mode) textarea {
+    color: #e0e0e0 !important;
+}
+
+body.light-mode textarea {
+    color: #1a1a2e !important;
+}
+
+/* Model kart hover efekti */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(108, 99, 255, 0.2);
+}
+
+/* Sayfa başına dön butonu */
+#scroll-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+    transition: opacity 0.2s;
+}
+
+#scroll-top:hover {
+    opacity: 0.9;
+}
+
+body.light-mode .navbar-brand,
+body.light-mode .nav-link,
+body.light-mode .navbar-nav .nav-link {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e0e0f0;
+}
+
+body.light-mode .fw-bold {
+    color: #1a1a2e !important;
+}
+
+.errorlist li,
+.alert-danger,
+.invalid-feedback {
+    color: #ff6b6b !important;
+}
+
+body.light-mode .errorlist li,
+body.light-mode .alert-danger,
+body.light-mode .invalid-feedback {
+    color: #cc0000 !important;
+}

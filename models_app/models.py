@@ -1,0 +1,141 @@
+from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    bio = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} profili"
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    link = models.URLField(blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.message[:50]}"
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+        Notification.objects.create(
+            user=instance,
+            message=f'🎉 Hoş geldin {instance.username}! ModelArena\'ya katıldığın için teşekkürler. AI modellerini keşfetmeye başla!',
+            link='/'
+        )
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.profile.save()
+    except UserProfile.DoesNotExist:
+        UserProfile.objects.create(user=instance)
+
+class AIModel(models.Model):
+    name = models.CharField(max_length=200)
+    company = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    input_price = models.DecimalField(max_digits=10, decimal_places=6, null=True, blank=True)
+    output_price = models.DecimalField(max_digits=10, decimal_places=6, null=True, blank=True)
+    context_window = models.IntegerField(null=True, blank=True)
+    release_date = models.DateField(null=True, blank=True)
+    is_multimodal = models.BooleanField(default=False)
+    is_free = models.BooleanField(default=False)
+    api_available = models.BooleanField(default=True)
+    image_url = models.URLField(blank=True)
+    subscription_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    subscription_name = models.CharField(max_length=200, blank=True)
+    website_url = models.URLField(blank=True)
+    parameters = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.company} - {self.name}"
+
+    @property
+    def input_price_per_million(self):
+        if self.input_price:
+            return round(float(self.input_price) * 1_000_000, 2)
+        return 0
+
+    @property
+    def output_price_per_million(self):
+        if self.output_price:
+            return round(float(self.output_price) * 1_000_000, 2)
+        return 0
+
+    @property
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            return round(sum(r.rating for r in reviews) / len(reviews), 1)
+        return 0
+
+    @property
+    def review_count(self):
+        return self.reviews.count()
+
+class SubscriptionPlan(models.Model):
+    model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='plans')
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    features = models.TextField(blank=True, help_text="Her özelliği virgülle ayır")
+    is_free = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.model.name} - {self.name}"
+
+    @property
+    def feature_list(self):
+        return [f.strip() for f in self.features.split(',') if f.strip()]
+
+class Benchmark(models.Model):
+    model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='benchmarks')
+    benchmark_name = models.CharField(max_length=200)
+    score = models.FloatField()
+    max_score = models.FloatField(default=100)
+    source_url = models.URLField(blank=True)
+
+    def __str__(self):
+        return f"{self.model.name} - {self.benchmark_name}"
+
+class PriceHistory(models.Model):
+    model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='price_history')
+    date = models.DateField()
+    input_price = models.DecimalField(max_digits=10, decimal_places=6)
+    output_price = models.DecimalField(max_digits=10, decimal_places=6)
+
+    def __str__(self):
+        return f"{self.model.name} - {self.date}"
+
+class UserFavorite(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    model = models.ForeignKey(AIModel, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'model')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.model.name}"
+
+class Review(models.Model):
+    model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'model')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.model.name} - {self.rating}"

@@ -1,0 +1,95 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| İstatistikler{% endblock %}
+
+{% block content %}
+<div class="hero mb-4">
+    <div class="d-flex align-items-center gap-3 mb-2">
+        <i class="bi bi-graph-up-arrow" style="font-size:2.5rem;color:var(--primary);"></i>
+        <div>
+            <h2 class="fw-bold mb-0">Platform İstatistikleri</h2>
+            <p class="text-secondary mb-0">ModelArena'nın genel kullanım istatistikleri</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-robot" style="font-size:2rem;color:var(--primary);"></i>
+            <div class="stat-number mt-2">{{ total_models }}</div>
+            <div class="text-secondary">Toplam Model</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-people-fill" style="font-size:2rem;color:#10b981;"></i>
+            <div class="stat-number mt-2">{{ total_users }}</div>
+            <div class="text-secondary">Kayıtlı Kullanıcı</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-chat-dots-fill" style="font-size:2rem;color:#f59e0b;"></i>
+            <div class="stat-number mt-2">{{ total_reviews }}</div>
+            <div class="text-secondary">Toplam Yorum</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card text-center">
+            <i class="bi bi-heart-fill" style="font-size:2rem;color:#ef4444;"></i>
+            <div class="stat-number mt-2">{{ total_favorites }}</div>
+            <div class="text-secondary">Toplam Favori</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-star-fill text-warning"></i> En Çok Puanlanan Modeller</h5>
+            {% for model in top_models %}
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="fw-bold" style="color:var(--primary);width:20px;">{{ forloop.counter }}</span>
+                <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                     style="width:32px;height:32px;object-fit:contain;border-radius:6px;"
+                     onerror="this.style.display='none'">
+                <div class="flex-grow-1">
+                    <a href="{% url 'model_detail' model.pk %}" class="fw-bold text-decoration-none" style="color:#ffffff;">{{ model.name }}</a>
+                    <small class="text-secondary d-block">{{ model.company }}</small>
+                </div>
+                <div class="text-end">
+                    <span class="price-tag" style="font-size:0.9rem;">{{ model.avg_rating|floatformat:1 }}/5</span>
+                    <small class="text-secondary d-block">{{ model.num_reviews }} yorum</small>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-secondary">Henüz yorum yok.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-heart-fill text-danger"></i> En Çok Favorilenen Modeller</h5>
+            {% for model in most_favorited %}
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="fw-bold" style="color:var(--primary);width:20px;">{{ forloop.counter }}</span>
+                <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                     style="width:32px;height:32px;object-fit:contain;border-radius:6px;"
+                     onerror="this.style.display='none'">
+                <div class="flex-grow-1">
+                    <a href="{% url 'model_detail' model.pk %}" class="fw-bold text-decoration-none" style="color:#ffffff;">{{ model.name }}</a>
+                    <small class="text-secondary d-block">{{ model.company }}</small>
+                </div>
+                <div class="text-end">
+                    <span class="price-tag" style="font-size:0.9rem;">{{ model.fav_count }}</span>
+                    <small class="text-secondary d-block">favori</small>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-secondary">Henüz favori yok.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

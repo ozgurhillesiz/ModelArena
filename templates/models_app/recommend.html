@@ -1,0 +1,147 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| Model Öneri{% endblock %}
+
+{% block content %}
+<div class="hero mb-4">
+    <div class="d-flex align-items-center gap-3 mb-2">
+        <i class="bi bi-magic" style="font-size:2.5rem;color:var(--primary);"></i>
+        <div>
+            <h2 class="fw-bold mb-0">Hangi AI Modeli Sana Uygun?</h2>
+            <p class="text-secondary mb-0">Birkaç soruyu yanıtla, sana en uygun modeli bulalım.</p>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4 mb-4">
+    <form method="get">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <label class="form-label fw-bold mb-3"><i class="bi bi-laptop"></i> Ne için kullanacaksın?</label>
+                <div class="d-flex flex-column gap-2">
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="use_case" value="coding" {% if use_case == 'coding' %}checked{% endif %}>
+                        <span>💻 Kod Yazma</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="use_case" value="writing" {% if use_case == 'writing' %}checked{% endif %}>
+                        <span>✍️ İçerik & Yazı</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="use_case" value="image" {% if use_case == 'image' %}checked{% endif %}>
+                        <span>🖼️ Görsel Anlama</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="use_case" value="research" {% if use_case == 'research' %}checked{% endif %}>
+                        <span>🔍 Araştırma</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="use_case" value="math" {% if use_case == 'math' %}checked{% endif %}>
+                        <span>🧮 Matematik & Analiz</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold mb-3"><i class="bi bi-wallet2"></i> Bütçen nedir?</label>
+                <div class="d-flex flex-column gap-2">
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="budget" value="free" {% if budget == 'free' %}checked{% endif %}>
+                        <span>🆓 Tamamen Ücretsiz</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="budget" value="low" {% if budget == 'low' %}checked{% endif %}>
+                        <span>💚 Ekonomik ($0-3/1M token)</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="budget" value="high" {% if budget == 'high' %}checked{% endif %}>
+                        <span>💜 Premium ($3+/1M token)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold mb-3"><i class="bi bi-image"></i> Görsel işleme gerekli mi?</label>
+                <div class="d-flex flex-column gap-2">
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="need_multimodal" value="" {% if not need_multimodal %}checked{% endif %}>
+                        <span>🤷 Fark etmez</span>
+                    </label>
+                    <label class="recommend-item d-flex align-items-center gap-2 p-3 rounded">
+                        <input type="radio" name="need_multimodal" value="yes" {% if need_multimodal == 'yes' %}checked{% endif %}>
+                        <span>✅ Evet, görsel işleyebilmeli</span>
+                    </label>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary w-100 py-3">
+                        <i class="bi bi-magic"></i> Öneri Al
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if recommended %}
+<h4 class="fw-bold mb-3"><i class="bi bi-check-circle text-success"></i> Sana Önerilen Modeller</h4>
+<div class="row g-4">
+    {% for model in recommended %}
+    <div class="col-md-6">
+        <div class="card p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <img src="{{ model.image_url }}" alt="{{ model.name }}"
+                     style="width:48px;height:48px;object-fit:contain;border-radius:10px;"
+                     onerror="this.style.display='none'">
+                <div>
+                    <h5 class="fw-bold mb-0" style="color:#ffffff;">{{ model.name }}</h5>
+                    <small class="text-secondary">{{ model.company }}</small>
+                </div>
+            </div>
+            <p class="text-secondary small mb-3">{{ model.description|truncatewords:25 }}</p>
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+                {% if model.is_multimodal %}<span class="badge-multimodal">Multimodal</span>{% endif %}
+                {% if model.is_free %}<span class="badge-free">Ücretsiz</span>{% endif %}
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <div class="stat-card p-2 text-center">
+                        <div class="text-secondary" style="font-size:0.7rem">Input Fiyat</div>
+                        <div class="price-tag" style="font-size:0.9rem">{% if model.is_free %}Ücretsiz{% else %}${{ model.input_price_per_million }}{% endif %}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-card p-2 text-center">
+                        <div class="text-secondary" style="font-size:0.7rem">Context</div>
+                        <div class="price-tag" style="font-size:0.9rem">{{ model.context_window }}k</div>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'model_detail' model.pk %}" class="btn btn-primary w-100">
+                <i class="bi bi-info-circle"></i> Detayları Gör
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% elif use_case or budget or need_multimodal %}
+<div class="card p-5 text-center">
+    <i class="bi bi-emoji-frown" style="font-size:3rem;color:var(--primary)"></i>
+    <p class="mt-3 text-secondary">Bu kriterlere uygun model bulunamadı. Farklı seçenekler dene.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateLabelColors() {
+    const isDark = !document.getElementById('body').classList.contains('light-mode');
+    document.querySelectorAll('.form-label').forEach(el => {
+        el.style.color = isDark ? '#e0e0e0' : '#1a1a2e';
+    });
+}
+updateLabelColors();
+document.getElementById('themeSwitch').addEventListener('click', function() {
+    setTimeout(updateLabelColors, 100);
+});
+</script>
+{% endblock %}
