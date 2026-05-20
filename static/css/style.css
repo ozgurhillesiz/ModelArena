@@ -663,3 +663,17 @@ body.light-mode .alert-danger,
 body.light-mode .invalid-feedback {
     color: #cc0000 !important;
 }
+
+.floating-logo-hero {
+    position: absolute;
+    border-radius: 12px;
+    opacity: 0;
+    animation: floatHero linear infinite;
+}
+
+@keyframes floatHero {
+    0% { transform: translateY(-120px); opacity: 0; }
+    10% { opacity: 0.12; }
+    90% { opacity: 0.12; }
+    100% { transform: translateY(110vh); opacity: 0; }
+}
