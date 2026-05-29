@@ -21,5 +21,6 @@ urlpatterns = [
     path('news/', views.news, name='news'),
     path('recommend/', views.recommend, name='recommend'),
     path('stats/', views.stats, name='stats'),
+    path('tools/', views.tools, name='tools'),
     path('api/', include(router.urls)),
 ]

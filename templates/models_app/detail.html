@@ -88,10 +88,12 @@
         {% if plans %}
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-4"><i class="bi bi-credit-card"></i> Abonelik Planları</h5>
-            <div class="row g-3">
+            <div class="row g-3" id="plans-container">
                 {% for plan in plans %}
                 <div class="col-md-6">
-                    <div class="card p-3 h-100" style="border: 1px solid {% if plan.is_free %}#10b981{% else %}var(--card-border){% endif %};">
+                    <div class="plan-card card p-3 h-100"
+                         onclick="selectPlan(this, '{{ plan.name }}', '{{ plan.price }}', '{{ plan.is_free }}', `{{ plan.features }}`)"
+                         style="border: 1px solid {% if plan.is_free %}#10b981{% else %}var(--card-border){% endif %};cursor:pointer;transition:all 0.2s;">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h6 class="fw-bold mb-0" style="color:#ffffff;">{{ plan.name }}</h6>
                             {% if plan.is_free %}
@@ -113,8 +115,18 @@
                 </div>
                 {% endfor %}
             </div>
+
+            <!-- Seçili plan detayı -->
+            <div id="plan-detail" class="mt-4 p-3 rounded" style="display:none;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0" id="plan-detail-name" style="color:#ffffff;"></h6>
+                    <span id="plan-detail-price" class="price-tag"></span>
+                </div>
+                <div id="plan-detail-features"></div>
+            </div>
+
             <small class="text-secondary mt-3 d-block">
-                <i class="bi bi-info-circle"></i> Abonelik planları bireysel kullanıcılar içindir. Geliştiriciler için API fiyatları yukarıda gösterilmektedir.
+                <i class="bi bi-info-circle"></i> Bir plana tıklayarak detayları görüntüleyebilirsin.
             </small>
         </div>
         {% endif %}
@@ -126,38 +138,38 @@
 
             <div class="mt-4 p-3 rounded" style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);">
                 <h6 class="fw-bold mb-3"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu Testler Ne Anlama Geliyor?</h6>
-                <p class="text-secondary small mb-3">Benchmark testleri AI modellerinin farklı alanlardaki performansını ölçen standart sınavlardır. 100 üzerinden puanlanır — yüksek puan daha iyi performans anlamına gelir.</p>
+                <p class="text-secondary small mb-3">Benchmark testleri AI modellerinin farklı alanlardaki performansını ölçen standart sınavlardır. 100 üzerinden puanlanır.</p>
                 <div class="row g-2">
                     {% for b in benchmarks %}
                     <div class="col-md-6">
                         <div class="p-2 rounded" style="background:rgba(108,99,255,0.1);">
                             {% if b.benchmark_name == "MMLU" %}
                             <div class="fw-bold small" style="color:#ffffff;">📚 MMLU — {{ b.score }}/100</div>
-                            <small class="text-secondary">57 farklı alanda (matematik, tarih, hukuk, tıp vb.) genel bilgi testi. Modelin ne kadar geniş bir bilgiye sahip olduğunu ölçer.</small>
+                            <small class="text-secondary">57 farklı alanda genel bilgi testi.</small>
                             {% elif b.benchmark_name == "HumanEval" %}
                             <div class="fw-bold small" style="color:#ffffff;">💻 HumanEval — {{ b.score }}/100</div>
-                            <small class="text-secondary">164 programlama sorusundan oluşan kod yazma testi. Modelin ne kadar iyi kod yazabildiğini ölçer.</small>
+                            <small class="text-secondary">164 programlama sorusundan oluşan kod yazma testi.</small>
                             {% elif b.benchmark_name == "MATH" %}
                             <div class="fw-bold small" style="color:#ffffff;">🧮 MATH — {{ b.score }}/100</div>
-                            <small class="text-secondary">Lise ve üniversite düzeyinde matematik problemleri. Modelin matematiksel akıl yürütme yeteneğini ölçer.</small>
+                            <small class="text-secondary">Lise ve üniversite düzeyinde matematik problemleri.</small>
                             {% elif b.benchmark_name == "HellaSwag" %}
                             <div class="fw-bold small" style="color:#ffffff;">🔬 HellaSwag — {{ b.score }}/100</div>
-                            <small class="text-secondary">Günlük durumları anlama ve mantıksal çıkarım testi. Modelin insan gibi düşünüp düşünemediğini ölçer.</small>
+                            <small class="text-secondary">Günlük durumları anlama ve mantıksal çıkarım testi.</small>
                             {% elif b.benchmark_name == "GSM8K" %}
                             <div class="fw-bold small" style="color:#ffffff;">🎯 GSM8K — {{ b.score }}/100</div>
-                            <small class="text-secondary">İlkokul düzeyinde matematik sözel problemleri. Modelin adım adım problem çözme yeteneğini ölçer.</small>
+                            <small class="text-secondary">İlkokul düzeyinde matematik sözel problemleri.</small>
                             {% elif b.benchmark_name == "TruthfulQA" %}
                             <div class="fw-bold small" style="color:#ffffff;">⚖️ TruthfulQA — {{ b.score }}/100</div>
-                            <small class="text-secondary">Modelin ne kadar doğru ve güvenilir bilgi verdiğini ölçen test. Yanlış bilgi üretme eğilimini test eder.</small>
+                            <small class="text-secondary">Modelin ne kadar doğru bilgi verdiğini ölçen test.</small>
                             {% elif b.benchmark_name == "ARC" %}
                             <div class="fw-bold small" style="color:#ffffff;">🔭 ARC — {{ b.score }}/100</div>
-                            <small class="text-secondary">İlk ve ortaokul düzeyinde fen bilimleri soruları. Modelin bilimsel akıl yürütme yeteneğini ölçer.</small>
+                            <small class="text-secondary">Fen bilimleri soruları.</small>
                             {% elif b.benchmark_name == "WinoGrande" %}
                             <div class="fw-bold small" style="color:#ffffff;">🧩 WinoGrande — {{ b.score }}/100</div>
-                            <small class="text-secondary">Dil anlama ve bağlamsal akıl yürütme testi. Modelin cümlelerdeki belirsizlikleri çözüp çözemediğini ölçer.</small>
+                            <small class="text-secondary">Dil anlama ve bağlamsal akıl yürütme testi.</small>
                             {% else %}
                             <div class="fw-bold small" style="color:#ffffff;">📊 {{ b.benchmark_name }} — {{ b.score }}/100</div>
-                            <small class="text-secondary">AI modelinin bu alandaki performans testi. Yüksek puan daha iyi performans anlamına gelir.</small>
+                            <small class="text-secondary">AI modelinin bu alandaki performans testi.</small>
                             {% endif %}
                         </div>
                     </div>
@@ -172,7 +184,7 @@
             <h5 class="fw-bold mb-3"><i class="bi bi-graph-up"></i> Fiyat Geçmişi</h5>
             <canvas id="priceChart"></canvas>
             <div class="mt-3 p-3 rounded" style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);">
-                <p class="text-secondary small mb-0"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu grafik modelin API fiyatının zaman içinde nasıl değiştiğini gösterir. Mavi çizgi soru fiyatını, mor çizgi cevap fiyatını temsil eder. Fiyatlar 1 milyon token başına dolar cinsindendir.</p>
+                <p class="text-secondary small mb-0"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu grafik modelin API fiyatının zaman içinde nasıl değiştiğini gösterir.</p>
             </div>
         </div>
         {% endif %}
@@ -295,7 +307,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="text-secondary">{{ ai_model.name }} modelini bir arkadaşına öner. Kullanıcı adını gir, bildirim gönderilecek.</p>
+                <p class="text-secondary">{{ ai_model.name }} modelini bir arkadaşına öner.</p>
                 <form method="post" action="{% url 'recommend_model' ai_model.pk %}">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -314,6 +326,45 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+function selectPlan(el, name, price, isFree, features) {
+    // Tüm kartları sıfırla
+    document.querySelectorAll('.plan-card').forEach(card => {
+        card.style.border = '1px solid var(--card-border)';
+        card.style.boxShadow = 'none';
+        card.style.transform = 'translateY(0)';
+    });
+
+    // Seçili kartı vurgula
+    el.style.border = '2px solid #6c63ff';
+    el.style.boxShadow = '0 0 20px rgba(108,99,255,0.3)';
+    el.style.transform = 'translateY(-4px)';
+
+    // Detay alanını göster
+    const detail = document.getElementById('plan-detail');
+    const detailName = document.getElementById('plan-detail-name');
+    const detailPrice = document.getElementById('plan-detail-price');
+    const detailFeatures = document.getElementById('plan-detail-features');
+
+    detailName.textContent = name;
+    detailPrice.textContent = isFree === 'True' ? 'Ücretsiz' : '$' + price + '/ay';
+
+    if (features && features.trim() !== '') {
+        const featureList = features.split(',').filter(f => f.trim());
+        detailFeatures.innerHTML = featureList.map(f =>
+            `<div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-check2-circle text-success"></i>
+                <small class="text-secondary">${f.trim()}</small>
+            </div>`
+        ).join('');
+    } else {
+        detailFeatures.innerHTML = '<small class="text-secondary">Bu plan için detay bilgisi bulunmuyor.</small>';
+    }
+
+    detail.style.display = 'block';
+}
+</script>
+
 {% if benchmarks %}
 <script>
 const bCtx = document.getElementById('benchmarkChart').getContext('2d');

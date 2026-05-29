@@ -39,27 +39,49 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-card">
-                    <div class="stat-number">₺{{ eur_to_try }}</div>
-                    <div class="text-secondary">1 EUR</div>
+                    <div class="stat-number">{{ total_reviews }}</div>
+                    <div class="text-secondary">Yorum</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card p-3 mb-4" style="border-left:3px solid var(--primary);">
+<div class="card p-4 mb-4" style="border-left:3px solid var(--primary);background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(168,85,247,0.05));">
     <div class="d-flex align-items-start gap-3">
-        <i class="bi bi-info-circle-fill" style="color:var(--primary);font-size:1.5rem;flex-shrink:0;margin-top:2px;"></i>
+        <i class="bi bi-rocket-takeoff-fill" style="color:var(--primary);font-size:2rem;flex-shrink:0;margin-top:2px;"></i>
         <div>
-            <h6 class="fw-bold mb-1">Token nedir?</h6>
-            <p class="text-secondary small mb-0">Token, yapay zekaların metni işleme birimidir. Kabaca <strong>1 token ≈ 0.75 kelime</strong> demektir. Yani <strong>1 milyon token ≈ 750.000 kelime</strong> eder. AI fiyatları genellikle her 1 milyon token başına dolar olarak hesaplanır — soru ve cevap fiyatları ayrı ayrı uygulanır.</p>
+            <h5 class="fw-bold mb-2" style="color:var(--text-primary);">ModelArena Nedir?</h5>
+            <p class="text-secondary mb-3">
+                Yüzlerce yapay zeka modelini tek bir yerde karşılaştır. GPT-4o'dan Claude'a, Gemini'den DeepSeek'e — fiyatları, yetenekleri ve kullanıcı yorumlarıyla en iyi modeli bul.
+            </p>
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <div class="p-2 rounded" style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);">
+                        <div class="fw-bold small mb-1" style="color:var(--primary);">🔍 Karşılaştır</div>
+                        <small class="text-secondary">Onlarca modeli yan yana gör, hangisinin sana uygun olduğuna kolayca karar ver.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-2 rounded" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);">
+                        <div class="fw-bold small mb-1" style="color:#10b981;">💰 Fiyat Takibi</div>
+                        <small class="text-secondary">Güncel API ve abonelik fiyatlarını takip et, bütçene en uygun modeli seç.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-2 rounded" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+                        <div class="fw-bold small mb-1" style="color:#f59e0b;">⭐ Topluluk</div>
+                        <small class="text-secondary">Gerçek kullanıcı yorumlarını oku, deneyimleri paylaş, topluluğa katkıda bulun.</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 {% if top_rated %}
 <div class="mb-4">
-    <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning"></i> En Çok Puanlanan Modeller</h5>
+    <h5 class="fw-bold mb-3" style="color:var(--text-primary);"><i class="bi bi-star-fill text-warning"></i> En Çok Puanlanan Modeller</h5>
     <div class="row g-3">
         {% for model in top_rated %}
         <div class="col-md-6 col-lg-4">
@@ -69,7 +91,7 @@
                          style="width:40px;height:40px;object-fit:contain;border-radius:8px;flex-shrink:0;"
                          onerror="this.style.display='none'">
                     <div class="flex-grow-1">
-                        <div class="fw-bold" style="color:#ffffff;">{{ model.name }}</div>
+                        <div class="fw-bold model-name">{{ model.name }}</div>
                         <small class="text-secondary">{{ model.company }}</small>
                     </div>
                     <div class="text-end">
@@ -86,7 +108,7 @@
 
 {% if most_favorited %}
 <div class="mb-4">
-    <h5 class="fw-bold mb-3"><i class="bi bi-heart-fill text-danger"></i> En Çok Favorilenen Modeller</h5>
+    <h5 class="fw-bold mb-3" style="color:var(--text-primary);"><i class="bi bi-heart-fill text-danger"></i> En Çok Favorilenen Modeller</h5>
     <div class="row g-3">
         {% for model in most_favorited %}
         <div class="col-md-6 col-lg-4">
@@ -96,7 +118,7 @@
                          style="width:40px;height:40px;object-fit:contain;border-radius:8px;flex-shrink:0;"
                          onerror="this.style.display='none'">
                     <div class="flex-grow-1">
-                        <div class="fw-bold" style="color:#ffffff;">{{ model.name }}</div>
+                        <div class="fw-bold model-name">{{ model.name }}</div>
                         <small class="text-secondary">{{ model.company }}</small>
                     </div>
                     <div>
@@ -116,7 +138,7 @@
 {% endif %}
 
 <div class="search-bar mb-4">
-    <form method="get" class="row g-2">
+    <form method="get" class="row g-2" id="filter-form">
         <div class="col-md-4">
             <input type="text" name="search" id="search-input" class="form-control" placeholder="Model ara..." value="{{ search }}">
         </div>
@@ -163,8 +185,8 @@
 
 <div class="row g-4" id="model-grid">
     {% for model in models %}
-    <div class="col-md-6 col-lg-4">
-        <div class="card h-100 p-3">
+    <div class="col-md-6 col-lg-4" data-model-id="{{ model.pk }}">
+        <div class="card h-100 p-3 model-card">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center gap-2">
                     <img src="{{ model.image_url }}"
@@ -175,7 +197,7 @@
                         {{ model.company|first }}
                     </div>
                     <div>
-                        <h5 class="fw-bold mb-0">{{ model.name }}</h5>
+                        <h5 class="fw-bold mb-0 model-name">{{ model.name }}</h5>
                         <small class="text-secondary">{{ model.company }}</small>
                     </div>
                 </div>
@@ -189,7 +211,6 @@
                 </div>
             </div>
             <p class="text-secondary small mb-2">{{ model.description|truncatewords:20 }}</p>
-            
             <div class="d-flex align-items-center gap-2 mb-2">
                 <div>
                     {% for i in "12345" %}
@@ -202,7 +223,6 @@
                 </div>
                 <small class="text-secondary">{{ model.average_rating }}/5 ({{ model.review_count }} yorum)</small>
             </div>
-
             <div class="d-flex gap-3 mb-2">
                 <small class="text-secondary">
                     <i class="bi bi-window"></i> {{ model.context_window }}k context
@@ -215,7 +235,6 @@
                     {% endif %}
                 </small>
             </div>
-
             <div class="mb-2">
                 {% with paid_plans=model.plans.all %}
                 {% for plan in paid_plans %}
@@ -236,7 +255,6 @@
                 {% endfor %}
                 {% endwith %}
             </div>
-
             <div class="d-flex gap-2 mt-auto">
                 <a href="{% url 'model_detail' model.pk %}" class="btn btn-primary btn-sm flex-grow-1">
                     <i class="bi bi-info-circle"></i> Detay

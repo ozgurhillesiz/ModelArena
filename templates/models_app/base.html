@@ -10,28 +10,319 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 <body id="body">
-<nav class="navbar navbar-expand-lg navbar-dark">
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'img/logo.svg' %}" style="width:28px;height:28px;">
+            <span class="fw-bold" style="color:#ffffff;">ModelArena</span>
+        </div>
+        <button onclick="closeSidebar()" style="background:none;border:none;color:#a0a0c0;font-size:1.2rem;cursor:pointer;">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">🚀 Hızlı Erişim</div>
+            <a href="{% url 'home' %}" class="sidebar-link">
+                <img src="{% static 'img/logo.svg' %}" style="width:20px;height:20px;"> Tüm Modeller
+            </a>
+            <a href="{% url 'tools' %}" class="sidebar-link">
+                <i class="bi bi-tools" style="color:#6c63ff;"></i> AI Araçları
+            </a>
+            <a href="{% url 'compare' %}" class="sidebar-link">
+                <i class="bi bi-bar-chart-fill" style="color:#a855f7;"></i> Karşılaştır
+            </a>
+            <a href="{% url 'recommend' %}" class="sidebar-link">
+                <i class="bi bi-magic" style="color:#f59e0b;"></i> Model Öneri
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">🔍 Filtrele</div>
+            <a href="{% url 'home' %}?is_free=1" class="sidebar-link">
+                <i class="bi bi-check-circle-fill text-success"></i> Ücretsiz Modeller
+            </a>
+            <a href="{% url 'home' %}?is_multimodal=1" class="sidebar-link">
+                <i class="bi bi-image text-info"></i> Multimodal Modeller
+            </a>
+            <a href="{% url 'home' %}?sort=price_asc" class="sidebar-link">
+                <i class="bi bi-sort-numeric-up text-warning"></i> En Ucuz
+            </a>
+            <a href="{% url 'home' %}?sort=rating" class="sidebar-link">
+                <i class="bi bi-star-fill text-warning"></i> En Çok Puanlanan
+            </a>
+            <a href="{% url 'home' %}?sort=newest" class="sidebar-link">
+                <i class="bi bi-clock text-primary"></i> En Yeni
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">🏢 Şirketler</div>
+            <a href="{% url 'home' %}?company=OpenAI" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" style="width:20px;height:20px;border-radius:4px;"> OpenAI
+            </a>
+            <a href="{% url 'home' %}?company=Anthropic" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=claude.ai&sz=32" style="width:20px;height:20px;border-radius:4px;"> Anthropic
+            </a>
+            <a href="{% url 'home' %}?company=Google" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=32" style="width:20px;height:20px;border-radius:4px;"> Google
+            </a>
+            <a href="{% url 'home' %}?company=Meta" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=meta.com&sz=32" style="width:20px;height:20px;border-radius:4px;"> Meta
+            </a>
+            <a href="{% url 'home' %}?company=xAI" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=grok.com&sz=32" style="width:20px;height:20px;border-radius:4px;"> xAI
+            </a>
+            <a href="{% url 'home' %}?company=DeepSeek" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=deepseek.com&sz=32" style="width:20px;height:20px;border-radius:4px;"> DeepSeek
+            </a>
+            <a href="{% url 'home' %}?company=Mistral AI" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=mistral.ai&sz=32" style="width:20px;height:20px;border-radius:4px;"> Mistral AI
+            </a>
+            <a href="{% url 'home' %}?company=Microsoft" class="sidebar-link">
+                <img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=32" style="width:20px;height:20px;border-radius:4px;"> Microsoft
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">🌐 Keşfet</div>
+            <a href="{% url 'trending' %}" class="sidebar-link">
+                <i class="bi bi-fire" style="color:#ff6b35;"></i> Trending
+            </a>
+            <a href="{% url 'news' %}" class="sidebar-link">
+                <i class="bi bi-newspaper" style="color:#6c63ff;"></i> AI Haberleri
+            </a>
+            <a href="{% url 'stats' %}" class="sidebar-link">
+                <i class="bi bi-graph-up-arrow text-success"></i> İstatistikler
+            </a>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">👤 Hesabım</div>
+            <a href="{% url 'profile' %}" class="sidebar-link">
+                <i class="bi bi-person-circle" style="color:#6c63ff;"></i> Profilim
+            </a>
+            <a href="{% url 'favorites' %}" class="sidebar-link">
+                <i class="bi bi-heart-fill text-danger"></i> Favorilerim
+            </a>
+            <a href="{% url 'logout' %}" class="sidebar-link">
+                <i class="bi bi-box-arrow-right"></i> Çıkış
+            </a>
+        </div>
+        {% else %}
+        <div class="sidebar-section">
+            <a href="{% url 'account_login' %}" class="btn btn-primary w-100 mb-2">
+                <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+            </a>
+            <a href="{% url 'account_signup' %}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-person-plus"></i> Kayıt Ol
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="position:relative;z-index:9999;">
     <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'home' %}">
-            <img src="{% static 'img/logo.svg' %}" alt="ModelArena" style="width:32px;height:32px;">
-            ModelArena
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <button onclick="openSidebar()" class="sidebar-toggle-btn">
+                <i class="bi bi-list"></i>
+            </button>
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'home' %}">
+                <img src="{% static 'img/logo.svg' %}" alt="ModelArena" style="width:32px;height:32px;">
+                ModelArena
+            </a>
+        </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navMenu">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Modeller</a></li>
+
+                <!-- Modeller -->
+                <li class="nav-item mega-item">
+                    <a class="nav-link" href="{% url 'home' %}">Modeller</a>
+                    <div class="mega-menu">
+                        <div class="container">
+                            <div class="row g-4 py-4">
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">🔍 Filtrele</div>
+                                    <a class="mega-link" href="{% url 'home' %}">
+                                        <i class="bi bi-grid-fill"></i>
+                                        <div><div>Tüm Modeller</div><small>Tüm AI modellerini gör</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'home' %}?is_free=1">
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                        <div><div>Ücretsiz Modeller</div><small>Para ödemeden kullanabileceklerin</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'home' %}?is_multimodal=1">
+                                        <i class="bi bi-image text-info"></i>
+                                        <div><div>Multimodal Modeller</div><small>Görsel + metin işleyenler</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">📊 Sırala</div>
+                                    <a class="mega-link" href="{% url 'home' %}?sort=price_asc">
+                                        <i class="bi bi-sort-numeric-up text-warning"></i>
+                                        <div><div>Fiyata Göre</div><small>En ucuzdan başla</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'home' %}?sort=rating">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <div><div>En Çok Puanlanan</div><small>Kullanıcı favorileri</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'home' %}?sort=context">
+                                        <i class="bi bi-window text-primary"></i>
+                                        <div><div>Context Window</div><small>En geniş bellekli modeller</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">🏢 Şirketler</div>
+                                    <a class="mega-link" href="{% url 'home' %}?company=OpenAI">
+                                        <img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>OpenAI</div><small>GPT-4o ve daha fazlası</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'home' %}?company=Anthropic">
+                                        <img src="https://www.google.com/s2/favicons?domain=claude.ai&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Anthropic</div><small>Claude serisi</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'home' %}?company=Google">
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Google</div><small>Gemini serisi</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">⚡ Hızlı Erişim</div>
+                                    <a class="mega-link" href="{% url 'compare' %}">
+                                        <i class="bi bi-bar-chart-fill" style="color:#6c63ff;"></i>
+                                        <div><div>Karşılaştır</div><small>Modelleri yan yana gör</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'recommend' %}">
+                                        <i class="bi bi-magic" style="color:#a855f7;"></i>
+                                        <div><div>Model Öner</div><small>Sana en uygun modeli bul</small></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Araçlar -->
+                <li class="nav-item mega-item">
+                    <a class="nav-link" href="{% url 'tools' %}"><i class="bi bi-tools"></i> Araçlar</a>
+                    <div class="mega-menu">
+                        <div class="container">
+                            <div class="row g-4 py-4">
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">🎨 Görsel</div>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=Midjourney">
+                                        <img src="https://www.google.com/s2/favicons?domain=midjourney.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Midjourney</div><small>AI görsel üretimi</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=DALL-E">
+                                        <img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>DALL-E 3</div><small>OpenAI görsel üretimi</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">💻 Kod</div>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=Cursor">
+                                        <img src="https://www.google.com/s2/favicons?domain=cursor.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Cursor</div><small>AI kod editörü</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=GitHub Copilot">
+                                        <img src="https://www.google.com/s2/favicons?domain=github.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>GitHub Copilot</div><small>Microsoft AI asistanı</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=Replit">
+                                        <img src="https://www.google.com/s2/favicons?domain=replit.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Replit</div><small>AI geliştirme platformu</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">🎵 Ses & Video</div>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=ElevenLabs">
+                                        <img src="https://www.google.com/s2/favicons?domain=elevenlabs.io&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>ElevenLabs</div><small>AI ses sentezleme</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=Runway">
+                                        <img src="https://www.google.com/s2/favicons?domain=runwayml.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Runway</div><small>AI video üretimi</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=Suno">
+                                        <img src="https://www.google.com/s2/favicons?domain=suno.com&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Suno AI</div><small>AI müzik üretimi</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mega-section-title">🔧 Diğer</div>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=Bolt">
+                                        <img src="https://www.google.com/s2/favicons?domain=bolt.new&sz=32" style="width:20px;height:20px;border-radius:4px;">
+                                        <div><div>Bolt.new</div><small>AI uygulama geliştirme</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}?search=NotebookLM">
+                                        <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/notebooklm-icon.png" style="width:20px;height:20px;border-radius:4px;object-fit:contain;">
+                                        <div><div>NotebookLM</div><small>AI not alma aracı</small></div>
+                                    </a>
+                                    <a class="mega-link" href="{% url 'tools' %}">
+                                        <i class="bi bi-grid" style="color:#6c63ff;"></i>
+                                        <div><div>Tüm Araçlar</div><small>Hepsini gör</small></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
                 <li class="nav-item"><a class="nav-link" href="{% url 'compare' %}">Karşılaştır</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'trending' %}"><i class="bi bi-fire"></i> Trending</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'news' %}"><i class="bi bi-newspaper"></i> Haberler</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'recommend' %}"><i class="bi bi-magic"></i> Öneri</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'stats' %}"><i class="bi bi-graph-up-arrow"></i> İstatistik</a></li>
+
+                <!-- Keşfet -->
+                <li class="nav-item mega-item">
+                    <a class="nav-link" href="#">Keşfet</a>
+                    <div class="mega-menu">
+                        <div class="container">
+                            <div class="row g-4 py-4">
+                                <div class="col-md-3">
+                                    <a class="mega-link" href="{% url 'trending' %}">
+                                        <i class="bi bi-fire" style="color:#ff6b35;font-size:1.5rem;"></i>
+                                        <div><div class="fw-bold">Trending</div><small>HuggingFace'deki popüler modeller</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="mega-link" href="{% url 'news' %}">
+                                        <i class="bi bi-newspaper" style="color:#6c63ff;font-size:1.5rem;"></i>
+                                        <div><div class="fw-bold">AI Haberleri</div><small>Güncel yapay zeka haberleri</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="mega-link" href="{% url 'recommend' %}">
+                                        <i class="bi bi-magic" style="color:#a855f7;font-size:1.5rem;"></i>
+                                        <div><div class="fw-bold">Model Öneri</div><small>Sana en uygun modeli bul</small></div>
+                                    </a>
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="mega-link" href="{% url 'stats' %}">
+                                        <i class="bi bi-graph-up-arrow" style="color:#10b981;font-size:1.5rem;"></i>
+                                        <div><div class="fw-bold">İstatistikler</div><small>Platform kullanım verileri</small></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'favorites' %}">Favoriler</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'favorites' %}"><i class="bi bi-heart"></i> Favoriler</a></li>
                 {% endif %}
             </ul>
-            <ul class="navbar-nav align-items-center gap-2">
+
+            <ul class="navbar-nav align-items-center gap-2 ms-auto">
                 <li class="nav-item">
                     <div class="theme-switch" id="themeSwitch" onclick="toggleTheme()">
                         <div class="theme-switch-thumb" id="themeSwitchThumb">
@@ -77,12 +368,13 @@
                     <img src="{% static 'img/logo.svg' %}" alt="ModelArena" style="width:32px;height:32px;">
                     <h5 class="fw-bold mb-0">ModelArena</h5>
                 </div>
-                <p class="text-secondary small">AI modellerini karşılaştır, fiyatları takip et, en iyisini seç. Güncel verilerle her zaman doğru kararı ver.</p>
+                <p class="text-secondary small">AI modellerini karşılaştır, fiyatları takip et, en iyisini seç.</p>
             </div>
             <div class="col-md-4">
                 <h6 class="fw-bold mb-3">Hızlı Linkler</h6>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="{% url 'home' %}" class="footer-link"><i class="bi bi-chevron-right"></i> Modeller</a></li>
+                    <li class="mb-2"><a href="{% url 'tools' %}" class="footer-link"><i class="bi bi-chevron-right"></i> AI Araçları</a></li>
                     <li class="mb-2"><a href="{% url 'compare' %}" class="footer-link"><i class="bi bi-chevron-right"></i> Karşılaştır</a></li>
                     <li class="mb-2"><a href="{% url 'trending' %}" class="footer-link"><i class="bi bi-chevron-right"></i> Trending</a></li>
                     <li class="mb-2"><a href="{% url 'news' %}" class="footer-link"><i class="bi bi-chevron-right"></i> AI Haberleri</a></li>
@@ -163,6 +455,35 @@ fetch('/users/notifications/count/')
         }
     }).catch(() => {});
 {% endif %}
+
+document.querySelectorAll('.mega-item').forEach(item => {
+    item.addEventListener('mouseenter', function() {
+        const menu = this.querySelector('.mega-menu');
+        if (menu) {
+            menu.style.display = 'block';
+            setTimeout(() => menu.style.opacity = '1', 10);
+        }
+    });
+    item.addEventListener('mouseleave', function() {
+        const menu = this.querySelector('.mega-menu');
+        if (menu) {
+            menu.style.opacity = '0';
+            setTimeout(() => menu.style.display = 'none', 200);
+        }
+    });
+});
+
+function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
 </script>
 {% block scripts %}{% endblock %}
 </body>

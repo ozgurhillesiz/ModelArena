@@ -1,0 +1,96 @@
+{% extends 'models_app/base.html' %}
+{% block title %}| AI Araçları{% endblock %}
+
+{% block content %}
+<div class="hero mb-4">
+    <div class="d-flex align-items-center gap-3 mb-2">
+        <i class="bi bi-tools" style="font-size:2.5rem;color:var(--primary);"></i>
+        <div>
+            <h2 class="fw-bold mb-0">AI Araçları</h2>
+            <p class="text-secondary mb-0">Kod yazmaktan müzik üretmeye, görsel oluşturmadan video editöre en iyi AI araçları</p>
+        </div>
+    </div>
+</div>
+
+<div class="search-bar mb-4">
+    <form method="get" class="row g-2">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Araç ara..." value="{{ search }}">
+        </div>
+        <div class="col-md-3">
+            <select name="is_free" class="form-select">
+                <option value="">Tümü</option>
+                <option value="1" {% if request.GET.is_free %}selected{% endif %}>Ücretsiz Plan Var</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-search"></i> Ara
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="row g-4">
+    {% for tool in tools %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-3">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="{{ tool.image_url }}"
+                         alt="{{ tool.name }}"
+                         style="width:36px;height:36px;object-fit:contain;border-radius:8px;"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="model-avatar" style="display:none;width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#6c63ff,#a855f7);align-items:center;justify-content:center;color:white;font-weight:700;">
+                        {{ tool.company|first }}
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">{{ tool.name }}</h5>
+                        <small class="text-secondary">{{ tool.company }}</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-1 flex-wrap justify-content-end">
+                    {% if tool.is_multimodal %}
+                    <span class="badge-multimodal">Multimodal</span>
+                    {% endif %}
+                    {% if tool.is_free %}
+                    <span class="badge-free">Ücretsiz Plan</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <p class="text-secondary small mb-3">{{ tool.description|truncatewords:20 }}</p>
+
+            <div class="mb-3">
+                {% with paid_plans=tool.plans.all %}
+                {% for plan in paid_plans %}
+                {% if not plan.is_free and forloop.first %}
+                <small class="text-secondary">
+                    <i class="bi bi-credit-card"></i> Başlangıç:
+                    <span class="price-tag" style="font-size:0.85rem;">${{ plan.price }}/ay</span>
+                </small>
+                {% endif %}
+                {% endfor %}
+                {% endwith %}
+            </div>
+
+            <div class="d-flex gap-2 mt-auto">
+                <a href="{% url 'model_detail' tool.pk %}" class="btn btn-primary btn-sm flex-grow-1">
+                    <i class="bi bi-info-circle"></i> Detay
+                </a>
+                {% if tool.website_url %}
+                <a href="{{ tool.website_url }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center text-secondary py-5">
+        <i class="bi bi-tools" style="font-size:3rem"></i>
+        <p class="mt-3">Araç bulunamadı.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

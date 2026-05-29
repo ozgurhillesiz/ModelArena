@@ -3,6 +3,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.mail import send_mail
+from django.conf import settings
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -22,6 +24,26 @@ class Notification(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.message[:50]}"
 
+class UserActivity(models.Model):
+    ACTIVITY_TYPES = [
+        ('review', 'Yorum Yapıldı'),
+        ('favorite', 'Favoriye Eklendi'),
+        ('unfavorite', 'Favoriden Çıkarıldı'),
+        ('compare', 'Karşılaştırıldı'),
+        ('recommend', 'Öneri Gönderildi'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_TYPES)
+    model = models.ForeignKey('AIModel', on_delete=models.CASCADE, null=True, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.activity_type}"
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -31,6 +53,16 @@ def create_user_profile(sender, instance, created, **kwargs):
             message=f'🎉 Hoş geldin {instance.username}! ModelArena\'ya katıldığın için teşekkürler. AI modellerini keşfetmeye başla!',
             link='/'
         )
+        try:
+            send_mail(
+                subject=f'🆕 Yeni Kullanıcı: {instance.username}',
+                message=f'ModelArena\'ya yeni bir kullanıcı kayıt oldu!\n\nKullanıcı adı: {instance.username}\nEmail: {instance.email}\nTarih: {instance.date_joined}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['ozgurhillesiz@outlook.com'],
+                fail_silently=True,
+            )
+        except:
+            pass
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -40,6 +72,10 @@ def save_user_profile(sender, instance, **kwargs):
         UserProfile.objects.create(user=instance)
 
 class AIModel(models.Model):
+    CATEGORY_CHOICES = [
+        ('model', 'AI Model'),
+        ('tool', 'AI Araç'),
+    ]
     name = models.CharField(max_length=200)
     company = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -55,6 +91,7 @@ class AIModel(models.Model):
     subscription_name = models.CharField(max_length=200, blank=True)
     website_url = models.URLField(blank=True)
     parameters = models.CharField(max_length=50, blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='model')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

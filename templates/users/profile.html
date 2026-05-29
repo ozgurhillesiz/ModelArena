@@ -70,7 +70,7 @@
                 <a href="{% url 'mark_all_read' %}" class="btn btn-outline-secondary btn-sm">Tümünü Okundu İşaretle</a>
             </div>
             {% for notif in notifications %}
-            <div class="d-flex align-items-start gap-3 p-2 mb-2 rounded {% if not notif.is_read %}{% endif %}"
+            <div class="d-flex align-items-start gap-3 p-2 mb-2 rounded"
                  style="background:{% if not notif.is_read %}rgba(108,99,255,0.1){% else %}transparent{% endif %};border:1px solid {% if not notif.is_read %}rgba(108,99,255,0.3){% else %}var(--card-border){% endif %};">
                 <i class="bi bi-bell{% if not notif.is_read %}-fill text-primary{% endif %} mt-1"></i>
                 <div class="flex-grow-1">
@@ -80,6 +80,36 @@
                 {% if not notif.is_read %}
                 <a href="{% url 'mark_notification_read' notif.pk %}" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-check"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if activities %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-clock-history"></i> Aktivite Geçmişi</h5>
+            {% for activity in activities %}
+            <div class="d-flex align-items-center gap-3 p-2 mb-2 rounded" style="border:1px solid var(--card-border);">
+                {% if activity.activity_type == 'review' %}
+                <i class="bi bi-star-fill text-warning" style="font-size:1.2rem;width:24px;"></i>
+                {% elif activity.activity_type == 'favorite' %}
+                <i class="bi bi-heart-fill text-danger" style="font-size:1.2rem;width:24px;"></i>
+                {% elif activity.activity_type == 'unfavorite' %}
+                <i class="bi bi-heart text-secondary" style="font-size:1.2rem;width:24px;"></i>
+                {% elif activity.activity_type == 'compare' %}
+                <i class="bi bi-bar-chart-fill" style="font-size:1.2rem;width:24px;color:var(--primary);"></i>
+                {% elif activity.activity_type == 'recommend' %}
+                <i class="bi bi-share-fill text-success" style="font-size:1.2rem;width:24px;"></i>
+                {% endif %}
+                <div class="flex-grow-1">
+                    <p class="mb-0 small">{{ activity.description }}</p>
+                    <small class="text-secondary">{{ activity.created_at|date:"d M Y H:i" }}</small>
+                </div>
+                {% if activity.model %}
+                <a href="{% url 'model_detail' activity.model.pk %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-right"></i>
                 </a>
                 {% endif %}
             </div>

@@ -9,13 +9,13 @@ from django.conf import settings
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import AIModel, Benchmark, PriceHistory, UserFavorite, Review, SubscriptionPlan, Notification
+from .models import AIModel, Benchmark, PriceHistory, UserFavorite, Review, SubscriptionPlan, Notification, UserActivity
 from .serializers import AIModelSerializer, BenchmarkSerializer, PriceHistorySerializer, UserFavoriteSerializer
 from .api_service import fetch_huggingface_models, get_model_stats, get_usd_to_try, fetch_ai_news, get_exchange_rates
 
 def home(request):
-    models = AIModel.objects.all()
-    companies = AIModel.objects.values_list('company', flat=True).distinct()
+    models = AIModel.objects.filter(category='model')
+    companies = AIModel.objects.filter(category='model').values_list('company', flat=True).distinct()
     
     search = request.GET.get('search', '')
     company = request.GET.get('company', '')
@@ -54,23 +54,40 @@ def home(request):
         rates = get_exchange_rates()
         cache.set('exchange_rates', rates, 60 * 30)
 
-    top_rated = AIModel.objects.annotate(
+    top_rated = AIModel.objects.filter(category='model').annotate(
         avg_rating=Avg('reviews__rating'),
         num_reviews=Count('reviews')
     ).filter(num_reviews__gt=0).order_by('-avg_rating')[:5]
 
-    most_favorited = AIModel.objects.annotate(
+    most_favorited = AIModel.objects.filter(category='model').annotate(
         fav_count=Count('userfavorite')
     ).order_by('-fav_count')[:5]
+
+    total_reviews = Review.objects.count()
 
     return render(request, 'models_app/home.html', {
         'models': models,
         'companies': companies,
         'search': search,
         'usd_to_try': rates['TRY'],
-        'eur_to_try': rates['EUR_TO_TRY'],
         'top_rated': top_rated,
         'most_favorited': most_favorited,
+        'total_reviews': total_reviews,
+    })
+
+def tools(request):
+    tools = AIModel.objects.filter(category='tool').order_by('name')
+    search = request.GET.get('search', '')
+    is_free = request.GET.get('is_free', '')
+
+    if search:
+        tools = tools.filter(Q(name__icontains=search) | Q(company__icontains=search))
+    if is_free:
+        tools = tools.filter(is_free=True)
+
+    return render(request, 'models_app/tools.html', {
+        'tools': tools,
+        'search': search,
     })
 
 def model_detail(request, pk):
@@ -113,6 +130,12 @@ def recommend_model(request, pk):
                     message=f'🤖 {request.user.username} sana "{ai_model.name}" modelini önerdi!',
                     link=f'/model/{pk}/'
                 )
+                UserActivity.objects.create(
+                    user=request.user,
+                    activity_type='recommend',
+                    model=ai_model,
+                    description=f'"{ai_model.name}" modelini {target_user.username} kullanıcısına önerdi.'
+                )
                 messages.success(request, f'{target_user.username} kullanıcısına öneri gönderildi!')
         except User.DoesNotExist:
             messages.error(request, 'Kullanıcı bulunamadı!')
@@ -135,6 +158,12 @@ def add_review(request, pk):
                 message=f'"{ai_model.name}" modeline {rating} yıldız verdin.',
                 link=f'/model/{pk}/'
             )
+            UserActivity.objects.create(
+                user=request.user,
+                activity_type='review',
+                model=ai_model,
+                description=f'"{ai_model.name}" modeline {rating} yıldız verdi.'
+            )
             messages.success(request, 'Yorumun eklendi!')
         return redirect('model_detail', pk=pk)
     return redirect('model_detail', pk=pk)
@@ -150,7 +179,17 @@ def delete_review(request, pk):
 def compare(request):
     selected_ids = request.GET.getlist('models')
     selected_models = AIModel.objects.filter(id__in=selected_ids).prefetch_related('plans')
-    all_models = AIModel.objects.all()
+    all_models = AIModel.objects.filter(category='model')
+
+    if request.user.is_authenticated and selected_models:
+        for m in selected_models:
+            UserActivity.objects.create(
+                user=request.user,
+                activity_type='compare',
+                model=m,
+                description=f'"{m.name}" modelini karşılaştırdı.'
+            )
+
     return render(request, 'models_app/compare.html', {
         'selected_models': selected_models,
         'all_models': all_models,
@@ -167,11 +206,23 @@ def toggle_favorite(request, pk):
             message=f'"{ai_model.name}" favorilerinden çıkarıldı.',
             link=f'/model/{pk}/'
         )
+        UserActivity.objects.create(
+            user=request.user,
+            activity_type='unfavorite',
+            model=ai_model,
+            description=f'"{ai_model.name}" modelini favorilerden çıkardı.'
+        )
     else:
         Notification.objects.create(
             user=request.user,
             message=f'"{ai_model.name}" favorilere eklendi! ❤️',
             link=f'/model/{pk}/'
+        )
+        UserActivity.objects.create(
+            user=request.user,
+            activity_type='favorite',
+            model=ai_model,
+            description=f'"{ai_model.name}" modelini favorilere ekledi.'
         )
     return redirect('model_detail', pk=pk)
 
@@ -215,7 +266,7 @@ def recommend(request):
     recommended = []
 
     if use_case or budget or need_multimodal:
-        models = AIModel.objects.all()
+        models = AIModel.objects.filter(category='model')
 
         if need_multimodal == 'yes':
             models = models.filter(is_multimodal=True)
@@ -248,11 +299,12 @@ def recommend(request):
     })
 
 def stats(request):
-    total_models = AIModel.objects.count()
+    total_models = AIModel.objects.filter(category='model').count()
+    total_tools = AIModel.objects.filter(category='tool').count()
     total_reviews = Review.objects.count()
     total_users = User.objects.count()
     total_favorites = UserFavorite.objects.count()
-    top_models = AIModel.objects.annotate(
+    top_models = AIModel.objects.filter(category='model').annotate(
         avg_rating=Avg('reviews__rating'),
         num_reviews=Count('reviews')
     ).filter(num_reviews__gt=0).order_by('-avg_rating')[:10]
@@ -261,6 +313,7 @@ def stats(request):
     ).order_by('-fav_count')[:10]
     return render(request, 'models_app/stats.html', {
         'total_models': total_models,
+        'total_tools': total_tools,
         'total_reviews': total_reviews,
         'total_users': total_users,
         'total_favorites': total_favorites,

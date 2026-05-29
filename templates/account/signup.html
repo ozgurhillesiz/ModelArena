@@ -51,8 +51,19 @@
                         </span>
                         <input type="password" name="password1" class="form-control" placeholder="Şifren">
                     </div>
-                    <small class="text-secondary">En az 8 karakter, sadece rakam olmamalı.</small>
                 </div>
+
+                <div class="p-2 rounded mb-3" style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);">
+                    <small style="color:var(--primary);"><i class="bi bi-shield-check"></i> Şifre kuralları:</small>
+                    <ul class="list-unstyled mb-0 mt-1">
+                        <li><small class="text-secondary"><i class="bi bi-check2 text-success"></i> En az 8 karakter</small></li>
+                        <li><small class="text-secondary"><i class="bi bi-check2 text-success"></i> En az 1 büyük harf (A-Z)</small></li>
+                        <li><small class="text-secondary"><i class="bi bi-check2 text-success"></i> En az 1 rakam (0-9)</small></li>
+                        <li><small class="text-secondary"><i class="bi bi-check2 text-success"></i> En az 1 özel karakter (!@#$% gibi)</small></li>
+                        <li><small class="text-secondary"><i class="bi bi-check2 text-success"></i> Sadece rakamdan oluşmamalı</small></li>
+                    </ul>
+                </div>
+
                 <div class="mb-4">
                     <label class="form-label text-secondary">Şifre Tekrar</label>
                     <div class="input-group">
@@ -62,6 +73,7 @@
                         <input type="password" name="password2" class="form-control" placeholder="Şifreni tekrar gir">
                     </div>
                 </div>
+
                 {% if form.errors %}
                 <div class="alert alert-danger">
                     {% for error in form.non_field_errors %}{{ error }}{% endfor %}

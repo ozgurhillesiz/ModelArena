@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -114,6 +116,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'models_app.validators.CustomPasswordValidator',
+    },
 ]
 
 
@@ -157,13 +162,6 @@ if os.environ.get('RENDER'):
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'senin_gmail@gmail.com'
-EMAIL_HOST_PASSWORD = 'gmail_uygulama_sifresi'
-DEFAULT_FROM_EMAIL = 'ModelArena <senin_gmail@gmail.com>'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
@@ -193,3 +191,11 @@ NEWS_API_KEY = '711544257dc944e299e23fdc235a9797'
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dombsidxn',
+    'API_KEY': '981613112275284',
+    'API_SECRET': 'bw_hputSrwqvGKZwxwHQJ2msolGM',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
