@@ -85,6 +85,40 @@
             </div>
         </div>
 
+        {% if ai_model.strengths_list or ai_model.weaknesses_list %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-lightning-charge"></i> Güçlü & Zayıf Yönler</h5>
+            <div class="row g-3">
+                {% if ai_model.strengths_list %}
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);">
+                        <div class="fw-bold mb-3" style="color:#10b981;"><i class="bi bi-check-circle-fill"></i> Güçlü Yönler</div>
+                        {% for s in ai_model.strengths_list %}
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <i class="bi bi-plus-circle-fill mt-1" style="color:#10b981;flex-shrink:0;"></i>
+                            <small class="text-secondary">{{ s }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if ai_model.weaknesses_list %}
+                <div class="col-md-6">
+                    <div class="p-3 rounded h-100" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);">
+                        <div class="fw-bold mb-3" style="color:#ef4444;"><i class="bi bi-x-circle-fill"></i> Zayıf Yönler</div>
+                        {% for w in ai_model.weaknesses_list %}
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <i class="bi bi-dash-circle-fill mt-1" style="color:#ef4444;flex-shrink:0;"></i>
+                            <small class="text-secondary">{{ w }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         {% if plans %}
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-4"><i class="bi bi-credit-card"></i> Abonelik Planları</h5>
@@ -116,7 +150,6 @@
                 {% endfor %}
             </div>
 
-            <!-- Seçili plan detayı -->
             <div id="plan-detail" class="mt-4 p-3 rounded" style="display:none;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h6 class="fw-bold mb-0" id="plan-detail-name" style="color:#ffffff;"></h6>
@@ -135,7 +168,6 @@
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-3"><i class="bi bi-trophy"></i> Benchmark Sonuçları</h5>
             <canvas id="benchmarkChart"></canvas>
-
             <div class="mt-4 p-3 rounded" style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);">
                 <h6 class="fw-bold mb-3"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu Testler Ne Anlama Geliyor?</h6>
                 <p class="text-secondary small mb-3">Benchmark testleri AI modellerinin farklı alanlardaki performansını ölçen standart sınavlardır. 100 üzerinden puanlanır.</p>
@@ -185,6 +217,36 @@
             <canvas id="priceChart"></canvas>
             <div class="mt-3 p-3 rounded" style="background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);">
                 <p class="text-secondary small mb-0"><i class="bi bi-info-circle" style="color:var(--primary);"></i> Bu grafik modelin API fiyatının zaman içinde nasıl değiştiğini gösterir.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if similar_models %}
+        <div class="card p-4 mb-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-grid"></i> Benzer Modeller</h5>
+            <div class="row g-3">
+                {% for m in similar_models %}
+                <div class="col-md-6">
+                    <a href="{% url 'model_detail' m.pk %}" class="text-decoration-none">
+                        <div class="card p-3 d-flex flex-row align-items-center gap-3 model-card">
+                            <img src="{{ m.image_url }}" alt="{{ m.name }}"
+                                 style="width:36px;height:36px;object-fit:contain;border-radius:8px;flex-shrink:0;"
+                                 onerror="this.style.display='none'">
+                            <div class="flex-grow-1">
+                                <div class="fw-bold" style="color:#ffffff;">{{ m.name }}</div>
+                                <small class="text-secondary">{{ m.company }}</small>
+                            </div>
+                            <div class="text-end">
+                                {% if m.is_free %}
+                                <span class="badge-free">Ücretsiz</span>
+                                {% else %}
+                                <small class="price-tag" style="font-size:0.85rem;">${{ m.input_price_per_million }}/1M</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
             </div>
         </div>
         {% endif %}
@@ -240,14 +302,29 @@
                         {% endfor %}
                     </div>
                 </div>
-                <p class="text-secondary mt-2 mb-0">{{ review.comment }}</p>
-                {% if user == review.user %}
-                <div class="mt-2">
+                <p class="text-secondary mt-2 mb-2">{{ review.comment }}</p>
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'like_review' review.pk %}" class="text-decoration-none">
+                        {% if review.pk in liked_reviews %}
+                        <i class="bi bi-hand-thumbs-up-fill" style="color:var(--primary);"></i>
+                        {% else %}
+                        <i class="bi bi-hand-thumbs-up text-secondary"></i>
+                        {% endif %}
+                        <small class="text-secondary ms-1">{{ review.likes.count }}</small>
+                    </a>
+                    {% else %}
+                    <span>
+                        <i class="bi bi-hand-thumbs-up text-secondary"></i>
+                        <small class="text-secondary ms-1">{{ review.likes.count }}</small>
+                    </span>
+                    {% endif %}
+                    {% if user == review.user %}
                     <a href="{% url 'delete_review' review.pk %}" class="text-danger small">
                         <i class="bi bi-trash"></i> Sil
                     </a>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
             {% empty %}
             <p class="text-secondary">Henüz yorum yok. İlk yorumu sen yap!</p>
@@ -328,27 +405,20 @@
 {% block scripts %}
 <script>
 function selectPlan(el, name, price, isFree, features) {
-    // Tüm kartları sıfırla
     document.querySelectorAll('.plan-card').forEach(card => {
         card.style.border = '1px solid var(--card-border)';
         card.style.boxShadow = 'none';
         card.style.transform = 'translateY(0)';
     });
-
-    // Seçili kartı vurgula
     el.style.border = '2px solid #6c63ff';
     el.style.boxShadow = '0 0 20px rgba(108,99,255,0.3)';
     el.style.transform = 'translateY(-4px)';
-
-    // Detay alanını göster
     const detail = document.getElementById('plan-detail');
     const detailName = document.getElementById('plan-detail-name');
     const detailPrice = document.getElementById('plan-detail-price');
     const detailFeatures = document.getElementById('plan-detail-features');
-
     detailName.textContent = name;
     detailPrice.textContent = isFree === 'True' ? 'Ücretsiz' : '$' + price + '/ay';
-
     if (features && features.trim() !== '') {
         const featureList = features.split(',').filter(f => f.trim());
         detailFeatures.innerHTML = featureList.map(f =>
@@ -360,7 +430,6 @@ function selectPlan(el, name, price, isFree, features) {
     } else {
         detailFeatures.innerHTML = '<small class="text-secondary">Bu plan için detay bilgisi bulunmuyor.</small>';
     }
-
     detail.style.display = 'block';
 }
 </script>

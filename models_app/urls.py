@@ -14,6 +14,7 @@ urlpatterns = [
     path('model/<int:pk>/review/', views.add_review, name='add_review'),
     path('model/<int:pk>/recommend/', views.recommend_model, name='recommend_model'),
     path('review/<int:pk>/delete/', views.delete_review, name='delete_review'),
+    path('review/<int:pk>/like/', views.like_review, name='like_review'),
     path('compare/', views.compare, name='compare'),
     path('favorites/', views.favorites, name='favorites'),
     path('trending/', views.trending, name='trending'),

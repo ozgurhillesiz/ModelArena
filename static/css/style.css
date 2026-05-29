@@ -1130,3 +1130,7 @@ body.light-mode .footer-link {
 body.light-mode .footer hr {
     border-color: #d0d0e0 !important;
 }
+
+.most-favorited .card {
+    min-height: 72px !important;
+}

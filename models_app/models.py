@@ -91,6 +91,8 @@ class AIModel(models.Model):
     subscription_name = models.CharField(max_length=200, blank=True)
     website_url = models.URLField(blank=True)
     parameters = models.CharField(max_length=50, blank=True)
+    strengths = models.TextField(blank=True, help_text="Her maddeyi virgülle ayır")
+    weaknesses = models.TextField(blank=True, help_text="Her maddeyi virgülle ayır")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='model')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -119,6 +121,14 @@ class AIModel(models.Model):
     @property
     def review_count(self):
         return self.reviews.count()
+
+    @property
+    def strengths_list(self):
+        return [s.strip() for s in self.strengths.split(',') if s.strip()]
+
+    @property
+    def weaknesses_list(self):
+        return [w.strip() for w in self.weaknesses.split(',') if w.strip()]
 
 class SubscriptionPlan(models.Model):
     model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='plans')
@@ -176,3 +186,15 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.model.name} - {self.rating}"
+
+
+class ReviewLike(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('review', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.review.pk}"
