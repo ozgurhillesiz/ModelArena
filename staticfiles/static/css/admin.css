@@ -1,0 +1,14 @@
+#nav-sidebar,
+.toggle-nav-sidebar,
+#nav-sidebar-toggle {
+    display: none !important;
+}
+
+body.login {
+    background: #0f0f1a !important;
+}
+
+.login #container {
+    background: transparent !important;
+    box-shadow: none !important;
+}
