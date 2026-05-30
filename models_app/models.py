@@ -1,3 +1,5 @@
+import os
+import uuid
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -5,10 +7,19 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils.text import slugify
+
+
+def avatar_upload_path(instance, filename):
+    # Dosya adını güvenli hale getir (Türkçe/özel karakterleri temizle)
+    ext = filename.split('.')[-1].lower()
+    safe_name = f"{uuid.uuid4().hex[:12]}.{ext}"
+    return f"avatars/{safe_name}"
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True)
     bio = models.TextField(blank=True)
 
     def __str__(self):

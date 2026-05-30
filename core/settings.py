@@ -89,8 +89,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles', 'static')
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -173,7 +171,13 @@ NEWS_API_KEY = '711544257dc944e299e23fdc235a9797'
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dombsidxn',
     'API_KEY': '981613112275284',
-    'API_SECRET': 'bw_hputSrwqvGKZwxwHQJ2msolGM',
-}
+    'API_SECRET': 'w_hputSrwqvGKZwxwHQJ2msolGM',}
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
