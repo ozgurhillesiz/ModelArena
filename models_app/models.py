@@ -198,3 +198,17 @@ class ReviewLike(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.review.pk}"
+
+
+class SecurityLog(models.Model):
+    ip_address = models.GenericIPAddressField()
+    username = models.CharField(max_length=200, blank=True)
+    action = models.CharField(max_length=100)
+    success = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.ip_address} - {self.action} - {self.created_at}"
