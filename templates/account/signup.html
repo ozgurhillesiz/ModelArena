@@ -25,6 +25,26 @@
             </div>
             <form method="post">
                 {% csrf_token %}
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label text-secondary">Ad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:var(--card-bg);border-color:var(--card-border);color:var(--primary)">
+                                <i class="bi bi-person-badge"></i>
+                            </span>
+                            <input type="text" name="first_name" class="form-control" placeholder="Adın">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-secondary">Soyad</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:var(--card-bg);border-color:var(--card-border);color:var(--primary)">
+                                <i class="bi bi-person-badge"></i>
+                            </span>
+                            <input type="text" name="last_name" class="form-control" placeholder="Soyadın">
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label text-secondary">Email</label>
                     <div class="input-group">

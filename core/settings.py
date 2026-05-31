@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -73,6 +74,13 @@ DATABASES = {
     }
 }
 
+# Render'da PostgreSQL kullan (DATABASE_URL varsa)
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.parse(
+        os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+    )
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -104,7 +112,8 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = '[ModelArena] '
 if os.environ.get('RENDER'):
     DEBUG = False
     ALLOWED_HOSTS = ['.onrender.com']
-
+    CSRF_TRUSTED_ORIGINS = ['https://modelarena-t331.onrender.com']
+    
     # HTTPS güvenliği
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
@@ -162,6 +171,7 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_FORMS = {'signup': 'users.forms.CustomSignupForm',}
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
