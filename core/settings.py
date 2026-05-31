@@ -154,14 +154,15 @@ CONTENT_SECURITY_POLICY = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ab9f89001@smtp-brevo.com'
-EMAIL_HOST_PASSWORD = 'O6K1mQxhf8sXnYJR'
+# Email — Render'da Brevo API (port sorunu yok), lokalde konsola yaz
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
+
+if BREVO_API_KEY:
+    EMAIL_BACKEND = 'users.email_backend.BrevoAPIBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 DEFAULT_FROM_EMAIL = 'ModelArena <ozgurhillesiz@outlook.com>'
-EMAIL_TIMEOUT = 10
 
 SITE_ID = 1
 
@@ -172,17 +173,21 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
-ACCOUNT_FORMS = {'signup': 'users.forms.CustomSignupForm',}
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+ACCOUNT_FORMS = {
+    'signup': 'users.forms.CustomSignupForm',
+}
 
 NEWS_API_KEY = '711544257dc944e299e23fdc235a9797'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dombsidxn',
     'API_KEY': '981613112275284',
-    'API_SECRET': 'w_hputSrwqvGKZwxwHQJ2msolGM',}
+    'API_SECRET': 'w_hputSrwqvGKZwxwHQJ2msolGM',
+}
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
