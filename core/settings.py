@@ -113,7 +113,7 @@ if os.environ.get('RENDER'):
     DEBUG = False
     ALLOWED_HOSTS = ['.onrender.com']
     CSRF_TRUSTED_ORIGINS = ['https://modelarena-t331.onrender.com']
-    
+
     # HTTPS güvenliği
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
@@ -161,6 +161,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ab9f89001@smtp-brevo.com'
 EMAIL_HOST_PASSWORD = 'O6K1mQxhf8sXnYJR'
 DEFAULT_FROM_EMAIL = 'ModelArena <ozgurhillesiz@outlook.com>'
+EMAIL_TIMEOUT = 10
 
 SITE_ID = 1
 
