@@ -1130,3 +1130,71 @@ body.light-mode .footer-link {
 body.light-mode .footer hr {
     border-color: #d0d0e0 !important;
 }
+
+.most-favorited .card {
+    min-height: 72px !important;
+}
+
+.modal-header {
+    padding: 1.2rem 1.5rem !important;
+}
+
+.modal-body {
+    padding: 1.5rem !important;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem !important;
+}
+
+body.light-mode .modal-content {
+    background: #ffffff !important;
+    border: 1px solid rgba(108,99,255,0.3) !important;
+}
+
+body.light-mode .modal-title {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .modal-body p {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .modal-header,
+body.light-mode .modal-footer {
+    border-color: #e0e0f0 !important;
+}
+
+body.light-mode .btn-close-white {
+    filter: invert(1);
+}
+
+body.light-mode .input-group-text {
+    background: #f0f0ff !important;
+    border-color: #d0d0f0 !important;
+    color: #6c63ff !important;
+}
+
+body.light-mode .form-control {
+    background: #ffffff !important;
+    border-color: #d0d0f0 !important;
+    color: #1a1a2e !important;
+}
+
+body.light-mode .form-control::placeholder {
+    color: #9090b0 !important;
+}
+
+body.light-mode .form-label {
+    color: #1a1a2e !important;
+}
+
+body.light-mode .form-select {
+    background-color: #ffffff !important;
+    border-color: #d0d0f0 !important;
+    color: #1a1a2e !important;
+}
+
+.form-control::placeholder {
+    color: #a0a0c0 !important;
+}
