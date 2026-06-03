@@ -1,0 +1,116 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="ma-dashboard">
+
+    <!-- İstatistik Kartları -->
+    <div class="ma-stats-grid">
+        <a href="{% url 'admin:models_app_aimodel_changelist' %}" class="ma-stat-card" style="text-decoration:none;">
+            <div class="ma-stat-icon" style="background:linear-gradient(135deg,#6c63ff,#4f46e5);">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ma-stat-info">
+                <div class="ma-stat-number">{{ ma_total_models }}</div>
+                <div class="ma-stat-label">AI Model & Araç</div>
+            </div>
+            <i class="fas fa-arrow-right ms-auto" style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+        </a>
+        <a href="{% url 'admin:auth_user_changelist' %}" class="ma-stat-card" style="text-decoration:none;">
+            <div class="ma-stat-icon" style="background:linear-gradient(135deg,#a855f7,#7c3aed);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="ma-stat-info">
+                <div class="ma-stat-number">{{ ma_total_users }}</div>
+                <div class="ma-stat-label">Kullanıcı</div>
+            </div>
+            <i class="fas fa-arrow-right ms-auto" style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+        </a>
+        <a href="{% url 'admin:models_app_review_changelist' %}" class="ma-stat-card" style="text-decoration:none;">
+            <div class="ma-stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#6c63ff);">
+<i class="fas fa-comment-dots"></i>
+            </div>
+            <div class="ma-stat-info">
+                <div class="ma-stat-number">{{ ma_total_reviews }}</div>
+                <div class="ma-stat-label">Yorum</div>
+            </div>
+            <i class="fas fa-arrow-right ms-auto" style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+        </a>
+        <a href="{% url 'admin:models_app_userfavorite_changelist' %}" class="ma-stat-card" style="text-decoration:none;">
+            <div class="ma-stat-icon" style="background:linear-gradient(135deg,#c026d3,#a855f7);">
+<i class="fas fa-star"></i>
+            </div>
+            <div class="ma-stat-info">
+                <div class="ma-stat-number">{{ ma_total_favorites }}</div>
+                <div class="ma-stat-label">Favori</div>
+            </div>
+            <i class="fas fa-arrow-right ms-auto" style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+        </a>
+    </div>
+
+    <!-- İki Kolon: Hızlı Erişim + Son İşlemler -->
+    <div class="ma-main-grid">
+        <div class="ma-panel">
+            <div class="ma-panel-header"><i class="fas fa-bolt"></i> Hızlı Erişim</div>
+            <div class="ma-panel-body">
+                <div class="ma-quick-grid">
+                    <a href="{% url 'admin:models_app_aimodel_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-robot"></i><span>Modeller</span>
+                    </a>
+                    <a href="{% url 'admin:models_app_review_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-star"></i><span>Yorumlar</span>
+                    </a>
+                    <a href="{% url 'admin:auth_user_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-users"></i><span>Kullanıcılar</span>
+                    </a>
+                    <a href="{% url 'admin:models_app_securitylog_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-shield-alt"></i><span>Güvenlik</span>
+                    </a>
+                    <a href="{% url 'admin:models_app_subscriptionplan_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-credit-card"></i><span>Planlar</span>
+                    </a>
+                    <a href="{% url 'admin:models_app_benchmark_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-trophy"></i><span>Benchmark</span>
+                    </a>
+                    <a href="{% url 'admin:models_app_notification_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-bell"></i><span>Bildirimler</span>
+                    </a>
+                    <a href="{% url 'admin:models_app_useractivity_changelist' %}" class="ma-quick-item">
+                        <i class="fas fa-history"></i><span>Aktiviteler</span>
+                    </a>
+                    <a href="/" target="_blank" class="ma-quick-item">
+                        <i class="fas fa-external-link-alt"></i><span>Siteyi Aç</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="ma-panel">
+            <div class="ma-panel-header"><i class="fas fa-clock"></i> Son İşlemler</div>
+            <div class="ma-panel-body">
+                {% load log %}
+                {% get_admin_log 10 as admin_log for_user user %}
+                {% if admin_log %}
+                <ul class="ma-log-list">
+                    {% for entry in admin_log %}
+                    <li class="ma-log-item">
+                        <span class="ma-log-dot {% if entry.is_addition %}add{% elif entry.is_change %}change{% elif entry.is_deletion %}delete{% endif %}"></span>
+                        <div class="ma-log-text">
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                                {{ entry.object_repr }}
+                            {% else %}
+                                <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+                            <small>{{ entry.content_type.name }}</small>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="ma-empty">Henüz işlem yok.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

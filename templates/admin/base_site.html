@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | ModelArena Yönetim{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}" style="display:flex;align-items:center;gap:10px;">
+        <img src="{% static 'img/logo.svg' %}" style="width:32px;height:32px;">
+        ModelArena Yönetim Paneli
+    </a>
+</h1>
+{% endblock %}
+
+

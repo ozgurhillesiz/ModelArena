@@ -1,14 +1,649 @@
-#nav-sidebar,
-.toggle-nav-sidebar,
-#nav-sidebar-toggle {
-    display: none !important;
+/* ===== ModelArena Admin — Cam Efekti + Mor Tema ===== */
+
+:root {
+    --ma-purple: #6c63ff;
+    --ma-purple-dark: #5a52d5;
+    --ma-purple-light: #a855f7;
+    --ma-bg: #0f0e1a;
+    --ma-card: rgba(43, 43, 61, 0.55);
 }
 
-body.login {
-    background: #0f0f1a !important;
+/* Genel arka plan — derin mor-lacivert gradyan */
+body, .wrapper {
+    background: linear-gradient(135deg, #0f0e1a 0%, #1a1733 50%, #0f0e1a 100%) !important;
+    background-attachment: fixed !important;
+    color: #e0e0f0 !important;
 }
 
-.login #container {
-    background: transparent !important;
+/* Üst navbar — cam efekti */
+.main-header.navbar {
+    background: rgba(108, 99, 255, 0.15) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(108,99,255,0.3) !important;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.2) !important;
+}
+
+.main-header .nav-link, .navbar-nav .nav-link {
+    color: #e0e0f0 !important;
+}
+
+/* Sol sidebar — cam efekti */
+.main-sidebar {
+    background: rgba(26, 23, 51, 0.7) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-right: 1px solid rgba(108,99,255,0.25) !important;
+}
+
+.brand-link {
+    background: rgba(108,99,255,0.12) !important;
+    border-bottom: 1px solid rgba(108,99,255,0.25) !important;
+}
+
+.brand-link .brand-image {
     box-shadow: none !important;
+}
+
+/* Sidebar menü öğeleri */
+.nav-sidebar .nav-link {
+    color: #c5c2e0 !important;
+    border-radius: 10px !important;
+    margin: 2px 8px !important;
+    transition: all 0.2s !important;
+}
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(108,99,255,0.18) !important;
+    color: white !important;
+}
+
+.nav-sidebar .nav-link.active {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    color: white !important;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.4) !important;
+}
+
+/* Kartlar / paneller — cam efekti */
+.card {
+    background: rgba(43, 43, 61, 0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(108,99,255,0.2) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+}
+
+.card-header {
+    background: linear-gradient(135deg, rgba(108,99,255,0.85), rgba(168,85,247,0.85)) !important;
+    color: white !important;
+    border-radius: 16px 16px 0 0 !important;
+    border: none !important;
+    font-weight: 600 !important;
+}
+
+/* Butonlar */
+.btn-primary, .btn-success {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.35) !important;
+    transition: all 0.2s !important;
+}
+
+.btn-primary:hover, .btn-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 22px rgba(108,99,255,0.5) !important;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #a855f7, #c026d3) !important;
+    border: none !important;
+    border-radius: 10px !important;
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 10px !important;
+}
+
+/* Tablolar */
+.table {
+    color: #e0e0f0 !important;
+}
+
+.table thead th {
+    background: rgba(108,99,255,0.25) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.table td, .table th {
+    border-color: rgba(108,99,255,0.12) !important;
+}
+
+.table-hover tbody tr:hover {
+    background: rgba(108,99,255,0.12) !important;
+}
+
+/* Linkler */
+a { color: #9d96ff; }
+a:hover { color: #c084fc; }
+
+/* Form alanları */
+.form-control, select, textarea, input {
+    background: rgba(15,14,26,0.6) !important;
+    border: 1px solid rgba(108,99,255,0.3) !important;
+    color: #e0e0f0 !important;
+    border-radius: 10px !important;
+}
+
+.form-control:focus {
+    border-color: #6c63ff !important;
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.25) !important;
+    background: rgba(15,14,26,0.8) !important;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: rgba(108,99,255,0.1) !important;
+    border-radius: 10px !important;
+}
+
+/* Login ekranı */
+.login-page, .login-box {
+    background: transparent !important;
+}
+
+.login-page {
+    background: linear-gradient(135deg, #0f0e1a, #1a1733) !important;
+}
+
+.login-card-body, .card.login-card {
+    background: rgba(43,43,61,0.6) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(108,99,255,0.3) !important;
+    border-radius: 16px !important;
+}
+
+/* Renkli istatistik kutuları (dashboard) */
+.small-box {
+    border-radius: 16px !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.small-box.bg-info {
+    background: linear-gradient(135deg, #6c63ff, #8b5cf6) !important;
+}
+.small-box.bg-success {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+.small-box.bg-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+.small-box.bg-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+/* İstatistik kartları — tek mor/siyah tema */
+.small-box.ma-stat {
+    background: linear-gradient(135deg, rgba(108,99,255,0.85), rgba(43,43,61,0.9)) !important;
+    color: white !important;
+}
+
+.small-box.ma-stat .icon i {
+    color: rgba(255,255,255,0.25) !important;
+}
+
+/* App kutularını eşit hizala — alt boşluk sorunu */
+.dashboard .col-lg-6 {
+    display: flex !important;
+}
+
+.dashboard .col-lg-6 > .card,
+.dashboard .col-lg-6 > .app-list,
+.dashboard .col-lg-6 > div {
+    width: 100% !important;
+}
+
+/* Recent actions kutusu cam efekti */
+.dashboard .card {
+    height: auto !important;
+}
+
+/* ===== Dashboard yerleşim düzeni ===== */
+
+/* Ana dashboard satırını flex yap */
+.dashboard > .row,
+.content .row:first-child {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+}
+
+/* Sol (app listesi) ile sağ (recent actions) yer değiştir */
+#content-main {
+    order: 2 !important;
+}
+
+#content-related {
+    order: 1 !important;
+}
+
+/* Recent Actions kutusu — camsı şık tasarım */
+#content-related .module {
+    background: rgba(43, 43, 61, 0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(108,99,255,0.25) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+    overflow: hidden !important;
+}
+
+#content-related .module h2,
+#recent-actions-module h2 {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    color: white !important;
+    border: none !important;
+    padding: 14px 18px !important;
+    font-size: 1rem !important;
+}
+
+/* Recent actions liste öğeleri */
+.module ul.actionlist {
+    padding: 10px 14px !important;
+}
+
+.module ul.actionlist li {
+    border-bottom: 1px solid rgba(108,99,255,0.12) !important;
+    padding: 8px 4px !important;
+    list-style: none !important;
+}
+
+.module ul.actionlist li:last-child {
+    border-bottom: none !important;
+}
+
+/* App kutuları (Accounts, Auth, Models_App) eşit ve düzgün */
+.app-list, #content-main > .module {
+    background: rgba(43, 43, 61, 0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(108,99,255,0.2) !important;
+    border-radius: 16px !important;
+    margin-bottom: 20px !important;
+    overflow: hidden !important;
+}
+
+#content-main > .module table {
+    width: 100% !important;
+}
+
+/* ===== ÖZEL DASHBOARD ===== */
+.ma-dashboard {
+    padding: 8px 4px;
+}
+
+/* İstatistik grid */
+.ma-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 992px) {
+    .ma-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.ma-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(108,99,255,0.9), rgba(43,43,61,0.95));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 8px 32px rgba(108,99,255,0.25);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.ma-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(108,99,255,0.4);
+}
+
+.ma-stat-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.15);
+    font-size: 1.6rem; color: #fff;
+    flex-shrink: 0;
+}
+
+.ma-stat-number {
+    font-size: 2rem; font-weight: 800; color: #fff; line-height: 1;
+}
+
+.ma-stat-label {
+    font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 4px;
+}
+
+/* Ana iki kolon */
+.ma-main-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 18px;
+}
+
+@media (max-width: 992px) {
+    .ma-main-grid { grid-template-columns: 1fr; }
+}
+
+/* Panel kartları */
+.ma-panel {
+    border-radius: 18px;
+    background: rgba(43,43,61,0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(108,99,255,0.22);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    overflow: hidden;
+}
+
+.ma-panel-header {
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    color: #fff;
+    padding: 16px 20px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+}
+
+.ma-panel-header i { margin-right: 8px; }
+
+.ma-panel-body { padding: 18px; }
+
+/* Hızlı erişim grid */
+.ma-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 576px) {
+    .ma-quick-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.ma-quick-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 10px;
+    border-radius: 14px;
+    background: rgba(108,99,255,0.1);
+    border: 1px solid rgba(108,99,255,0.2);
+    color: #c5c2e0 !important;
+    text-decoration: none !important;
+    transition: all 0.2s;
+}
+
+.ma-quick-item i { font-size: 1.5rem; color: #9d96ff; transition: all 0.2s; }
+.ma-quick-item span { font-size: 0.82rem; font-weight: 600; }
+
+.ma-quick-item:hover {
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    border-color: transparent;
+    color: #fff !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(108,99,255,0.4);
+}
+
+.ma-quick-item:hover i { color: #fff; }
+
+/* Son işlemler listesi */
+.ma-log-list { list-style: none; margin: 0; padding: 0; }
+
+.ma-log-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 6px;
+    border-bottom: 1px solid rgba(108,99,255,0.12);
+}
+
+.ma-log-item:last-child { border-bottom: none; }
+
+.ma-log-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #9d96ff; flex-shrink: 0;
+}
+.ma-log-dot.add { background: #10b981; }
+.ma-log-dot.change { background: #f59e0b; }
+.ma-log-dot.delete { background: #ef4444; }
+
+.ma-log-text { display: flex; flex-direction: column; }
+.ma-log-text a { color: #c084fc !important; font-weight: 600; }
+.ma-log-text small { color: #8884a8; font-size: 0.75rem; text-transform: capitalize; }
+
+.ma-empty { color: #8884a8; text-align: center; padding: 20px; }
+
+
+/* ===== LOGIN EKRANI — Site Tarzı ===== */
+.login-page,
+body.login {
+    background: linear-gradient(135deg, #0f0e1a 0%, #1a1733 50%, #0f0e1a 100%) !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Login kartı — camsı */
+.login-box, .login-card {
+    width: 400px !important;
+    max-width: 90% !important;
+}
+
+.login-card-body {
+    background: rgba(43,43,61,0.6) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border: 1px solid rgba(108,99,255,0.3) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4) !important;
+    padding: 36px 30px !important;
+}
+
+/* Login logosu/başlığı */
+.login-logo, .login-box-msg {
+    color: #fff !important;
+}
+
+.login-logo a {
+    color: #fff !important;
+    font-weight: 800 !important;
+    font-size: 1.6rem !important;
+}
+
+/* Login input'ları */
+.login-card-body .form-control {
+    background: rgba(15,14,26,0.6) !important;
+    border: 1px solid rgba(108,99,255,0.3) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    padding: 12px 14px !important;
+}
+
+.login-card-body .input-group-text {
+    background: rgba(108,99,255,0.2) !important;
+    border: 1px solid rgba(108,99,255,0.3) !important;
+    color: #9d96ff !important;
+    border-radius: 10px 0 0 10px !important;
+}
+
+.login-card-body .btn-primary {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    box-shadow: 0 6px 20px rgba(108,99,255,0.4) !important;
+}
+
+.login-card-body .btn-primary:hover {
+    transform: translateY(-2px) !important;
+}
+
+/* ===== TUTARLILIK RÖTUŞLARI ===== */
+/* Liste sayfası filtreleri camsı */
+#changelist-filter, .changelist-filter {
+    background: rgba(43,43,61,0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(108,99,255,0.2) !important;
+    border-radius: 14px !important;
+}
+
+#changelist-filter h2, .changelist-filter h2 {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    color: #fff !important;
+    border-radius: 14px 14px 0 0 !important;
+}
+
+/* Fieldset başlıkları (form gruplarımız) */
+fieldset.module {
+    background: rgba(43,43,61,0.5) !important;
+    border: 1px solid rgba(108,99,255,0.2) !important;
+    border-radius: 14px !important;
+    margin-bottom: 18px !important;
+    overflow: hidden !important;
+}
+
+fieldset.module > h2 {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    color: #fff !important;
+    padding: 12px 18px !important;
+}
+
+/* Submit row (kaydet butonları alanı) camsı */
+.submit-row {
+    background: rgba(43,43,61,0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(108,99,255,0.2) !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+}
+
+/* Genel font */
+body, .wrapper, .content-wrapper {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+
+/* ===== SOL SIDEBAR — Son Cila ===== */
+
+/* Sidebar arka planı — daha derin cam */
+.main-sidebar {
+    background: linear-gradient(180deg, rgba(26,23,51,0.85), rgba(15,14,26,0.9)) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border-right: 1px solid rgba(108,99,255,0.3) !important;
+    box-shadow: 4px 0 30px rgba(0,0,0,0.25) !important;
+}
+
+/* Logo / marka alanı */
+.brand-link {
+    background: rgba(108,99,255,0.12) !important;
+    border-bottom: 1px solid rgba(108,99,255,0.3) !important;
+    padding: 16px !important;
+    text-align: center !important;
+}
+
+.brand-link .brand-image {
+    width: 34px !important;
+    height: 34px !important;
+    margin-right: 10px !important;
+    opacity: 1 !important;
+}
+
+.brand-link .brand-text {
+    font-weight: 800 !important;
+    color: #fff !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Kullanıcı paneli (sidebar üstündeki) */
+.sidebar .user-panel {
+    border-bottom: 1px solid rgba(108,99,255,0.2) !important;
+    padding: 14px !important;
+}
+
+.sidebar .user-panel .info a {
+    color: #e0e0f0 !important;
+    font-weight: 600 !important;
+}
+
+/* Menü başlıkları (kategori) */
+.nav-sidebar .nav-header {
+    color: #8884a8 !important;
+    text-transform: uppercase !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 1px !important;
+    padding: 14px 16px 6px !important;
+}
+
+/* Menü öğeleri */
+.nav-sidebar .nav-link {
+    color: #c5c2e0 !important;
+    border-radius: 12px !important;
+    margin: 3px 10px !important;
+    padding: 11px 14px !important;
+    transition: all 0.22s !important;
+}
+
+.nav-sidebar .nav-link p { font-weight: 500 !important; }
+
+.nav-sidebar .nav-link i {
+    color: #9d96ff !important;
+    transition: all 0.22s !important;
+}
+
+/* Hover */
+.nav-sidebar .nav-link:hover {
+    background: rgba(108,99,255,0.18) !important;
+    color: #fff !important;
+    transform: translateX(4px) !important;
+}
+
+.nav-sidebar .nav-link:hover i { color: #fff !important; }
+
+/* Aktif öğe */
+.nav-sidebar .nav-link.active {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 20px rgba(108,99,255,0.45) !important;
+}
+
+.nav-sidebar .nav-link.active i { color: #fff !important; }
+
+/* Açılır alt menüler */
+.nav-treeview .nav-link {
+    margin-left: 18px !important;
+    font-size: 0.88rem !important;
+}
+
+/* Scrollbar (sidebar) */
+.main-sidebar::-webkit-scrollbar { width: 6px; }
+.main-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(108,99,255,0.4);
+    border-radius: 3px;
 }

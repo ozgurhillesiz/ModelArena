@@ -10,6 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,10 +51,11 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
+            'django.template.context_processors.request',
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+            'models_app.context_processors.admin_stats',
+           ],
         },
     },
 ]
@@ -191,3 +193,80 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# ===== Jazzmin Admin Teması =====
+JAZZMIN_SETTINGS = {
+    "site_title": "ModelArena Yönetim",
+    "site_header": "ModelArena",
+    "site_brand": "ModelArena",
+    "site_logo": "img/logo.svg",
+    "login_logo": "img/logo.svg",
+    "site_icon": "img/favicon.ico",
+    "welcome_sign": "ModelArena Yönetim Paneline Hoş Geldiniz",
+    "copyright": "ModelArena",
+    "search_model": ["models_app.AIModel", "auth.User"],
+
+    # Üst menü
+    "topmenu_links": [
+        {"name": "Siteye Git", "url": "/", "new_window": True},
+        {"name": "Modeller", "model": "models_app.AIModel"},
+        {"name": "Kullanıcılar", "model": "auth.User"},
+    ],
+
+    # Sol menü ikonları
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "models_app.AIModel": "fas fa-robot",
+        "models_app.Review": "fas fa-star",
+        "models_app.UserFavorite": "fas fa-heart",
+        "models_app.ReviewLike": "fas fa-thumbs-up",
+        "models_app.SubscriptionPlan": "fas fa-credit-card",
+        "models_app.Benchmark": "fas fa-trophy",
+        "models_app.PriceHistory": "fas fa-chart-line",
+        "models_app.Notification": "fas fa-bell",
+        "models_app.UserActivity": "fas fa-history",
+        "models_app.UserProfile": "fas fa-id-card",
+        "models_app.SecurityLog": "fas fa-shield-alt",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    "related_modal_active": True,
+    "custom_css": "css/admin.css",
+    "show_ui_builder": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-purple",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-purple",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}
