@@ -647,3 +647,68 @@ body, .wrapper, .content-wrapper {
     background: rgba(108,99,255,0.4);
     border-radius: 3px;
 }
+
+/* ===== SIDEBAR ZORLA (yüksek öncelik) ===== */
+body.sidebar-dark-purple .main-sidebar,
+body .main-sidebar,
+aside.main-sidebar {
+    background: linear-gradient(180deg, #1a1733 0%, #0f0e1a 100%) !important;
+    border-right: 1px solid rgba(108,99,255,0.3) !important;
+    box-shadow: 4px 0 30px rgba(0,0,0,0.3) !important;
+}
+
+body .main-sidebar .nav-sidebar .nav-item .nav-link,
+body aside .nav-sidebar > .nav-item > .nav-link {
+    color: #c5c2e0 !important;
+    border-radius: 12px !important;
+    margin: 4px 10px !important;
+    padding: 11px 14px !important;
+    transition: all 0.2s !important;
+}
+
+body .main-sidebar .nav-sidebar .nav-item .nav-link i,
+body aside .nav-sidebar .nav-link i {
+    color: #9d96ff !important;
+}
+
+body .main-sidebar .nav-sidebar .nav-item .nav-link:hover,
+body aside .nav-sidebar > .nav-item > .nav-link:hover {
+    background: rgba(108,99,255,0.22) !important;
+    color: #ffffff !important;
+    transform: translateX(4px) !important;
+}
+
+body .main-sidebar .nav-sidebar .nav-item .nav-link:hover i {
+    color: #ffffff !important;
+}
+
+body .main-sidebar .nav-sidebar .nav-item .nav-link.active,
+body aside .nav-sidebar > .nav-item > .nav-link.active {
+    background: linear-gradient(135deg, #6c63ff, #a855f7) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(108,99,255,0.5) !important;
+}
+
+body .main-sidebar .nav-sidebar .nav-item .nav-link.active i {
+    color: #ffffff !important;
+}
+
+body .main-sidebar .brand-link {
+    background: rgba(108,99,255,0.15) !important;
+    border-bottom: 1px solid rgba(108,99,255,0.3) !important;
+    padding: 16px !important;
+}
+
+body .main-sidebar .brand-link .brand-text {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+}
+
+body .main-sidebar .user-panel {
+    border-bottom: 1px solid rgba(108,99,255,0.2) !important;
+}
+
+body .main-sidebar .user-panel .info a {
+    color: #e0e0f0 !important;
+    font-weight: 600 !important;
+}
