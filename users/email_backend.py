@@ -1,3 +1,11 @@
+"""
+ModelArena - Brevo API Email Backend
+======================================
+Django'nun varsayılan SMTP backend'i yerine Brevo HTTP API'sini kullanır.
+Render gibi SMTP portlarını (587) engelleyen ortamlarda çalışmak için
+tasarlanmıştır. Port 443 (HTTPS) üzerinden mail gönderir.
+"""
+
 import json
 import requests
 from django.conf import settings
@@ -5,14 +13,23 @@ from django.core.mail.backends.base import BaseEmailBackend
 
 
 class BrevoAPIBackend(BaseEmailBackend):
+    """
+    Brevo (eski adıyla Sendinblue) HTTP API üzerinden email gönderen backend.
+    settings.py'de EMAIL_BACKEND olarak tanımlanır.
+    """
+
     def send_messages(self, email_messages):
+        """
+        Email mesajlarını Brevo API'ye POST eder.
+        Başarılı gönderim sayısını döndürür.
+        """
         api_key = settings.BREVO_API_KEY
         if not api_key:
             return 0
 
         sent = 0
         for message in email_messages:
-            # Gönderen adı ve adresi ayıkla
+            # Gönderen adı ve adresini ayıkla
             from_email = message.from_email
             if '<' in from_email:
                 from_name = from_email.split('<')[0].strip()
@@ -29,6 +46,7 @@ class BrevoAPIBackend(BaseEmailBackend):
             }
 
             try:
+                # Brevo API endpoint'ine istek at (timeout: 10 saniye)
                 response = requests.post(
                     "https://api.brevo.com/v3/smtp/email",
                     headers={

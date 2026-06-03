@@ -1,3 +1,11 @@
+"""
+ModelArena - Ana View'lar
+==========================
+AI model listeleme, detay, karşılaştırma, favori,
+yorum, beğeni, REST API ve üçüncü parti API
+entegrasyonlarını yöneten view fonksiyonları.
+"""
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -13,6 +21,8 @@ from .models import AIModel, Benchmark, PriceHistory, UserFavorite, Review, Subs
 from .serializers import AIModelSerializer, BenchmarkSerializer, PriceHistorySerializer, UserFavoriteSerializer
 from .api_service import fetch_huggingface_models, get_model_stats, get_usd_to_try, fetch_ai_news, get_exchange_rates
 
+
+# Ana sayfa — model listesi, arama, filtreleme ve sayfalama
 def home(request):
     models = AIModel.objects.filter(category='model')
     companies = AIModel.objects.filter(category='model').values_list('company', flat=True).distinct()
@@ -21,6 +31,7 @@ def home(request):
     is_free = request.GET.get('is_free', '')
     is_multimodal = request.GET.get('is_multimodal', '')
     sort = request.GET.get('sort', '')
+    # Arama ve filtreleme parametrelerini uygula
     if search:
         models = models.filter(Q(name__icontains=search) | Q(company__icontains=search))
     if company:
@@ -29,6 +40,7 @@ def home(request):
         models = models.filter(is_free=True)
     if is_multimodal:
         models = models.filter(is_multimodal=True)
+    # Sıralama seçeneğini uygula
     if sort == 'price_asc':
         models = models.order_by('input_price')
     elif sort == 'price_desc':
@@ -41,13 +53,16 @@ def home(request):
         models = models.order_by('-release_date')
     else:
         models = models.order_by('id')
+    # Sayfalama — her sayfada 6 model
     paginator = Paginator(models, 6)
     page = request.GET.get('page')
     models = paginator.get_page(page)
+    # Döviz kurunu önbellekten al, yoksa API'den çek (30 dk cache)
     rates = cache.get('exchange_rates')
     if not rates:
         rates = get_exchange_rates()
         cache.set('exchange_rates', rates, 60 * 30)
+    # En yüksek puanlı ve en çok favorilenen modeller
     top_rated = AIModel.objects.filter(category='model').annotate(
         avg_rating=Avg('reviews__rating'),
         num_reviews=Count('reviews')
@@ -66,6 +81,8 @@ def home(request):
         'total_reviews': total_reviews,
     })
 
+
+# AI araçları listesi — filtreleme destekli
 def tools(request):
     tools = AIModel.objects.filter(category='tool').order_by('name')
     search = request.GET.get('search', '')
@@ -76,6 +93,8 @@ def tools(request):
         tools = tools.filter(is_free=True)
     return render(request, 'models_app/tools.html', {'tools': tools, 'search': search})
 
+
+# Model detay sayfası — benchmark grafikleri, yorumlar, fiyat geçmişi
 def model_detail(request, pk):
     ai_model = get_object_or_404(AIModel, pk=pk)
     benchmarks = ai_model.benchmarks.all()
@@ -85,7 +104,9 @@ def model_detail(request, pk):
     users = User.objects.exclude(pk=request.user.pk) if request.user.is_authenticated else []
     user_review = None
     is_favorite = False
+    # Döviz kurunu önbellekten al
     usd_to_try = cache.get('usd_to_try') or get_usd_to_try()
+    # Benzer modelleri bul — önce aynı şirketten, yoksa aynı kategoriden
     similar_models = AIModel.objects.filter(
         company=ai_model.company, category=ai_model.category
     ).exclude(pk=pk)[:4]
@@ -94,6 +115,7 @@ def model_detail(request, pk):
             category=ai_model.category, is_multimodal=ai_model.is_multimodal
         ).exclude(pk=pk)[:4]
     liked_reviews = []
+    # Giriş yapmış kullanıcının favori ve yorum durumunu kontrol et
     if request.user.is_authenticated:
         is_favorite = UserFavorite.objects.filter(user=request.user, model=ai_model).exists()
         user_review = Review.objects.filter(user=request.user, model=ai_model).first()
@@ -112,6 +134,8 @@ def model_detail(request, pk):
         'liked_reviews': liked_reviews,
     })
 
+
+# Yorum beğeni toggle — beğen/beğeniyi kaldır
 @login_required
 def like_review(request, pk):
     review = get_object_or_404(Review, pk=pk)
@@ -120,6 +144,8 @@ def like_review(request, pk):
         like.delete()
     return redirect('model_detail', pk=review.model.pk)
 
+
+# Model öneri sistemi — kullanıcıya bildirim gönderir
 @login_required
 def recommend_model(request, pk):
     ai_model = get_object_or_404(AIModel, pk=pk)
@@ -146,6 +172,8 @@ def recommend_model(request, pk):
             messages.error(request, 'Kullanıcı bulunamadı!')
     return redirect('model_detail', pk=pk)
 
+
+# Yorum ekle veya güncelle — update_or_create ile tekrar yorum önlenir
 @login_required
 def add_review(request, pk):
     ai_model = get_object_or_404(AIModel, pk=pk)
@@ -170,6 +198,8 @@ def add_review(request, pk):
         return redirect('model_detail', pk=pk)
     return redirect('model_detail', pk=pk)
 
+
+# Yorum sil — sadece kendi yorumunu silebilir (get_object_or_404 ile yetki kontrolü)
 @login_required
 def delete_review(request, pk):
     review = get_object_or_404(Review, pk=pk, user=request.user)
@@ -178,6 +208,8 @@ def delete_review(request, pk):
     messages.success(request, 'Yorumun silindi!')
     return redirect('model_detail', pk=model_pk)
 
+
+# Model karşılaştırma — iki veya daha fazla modeli yan yana karşılaştırır
 def compare(request):
     selected_ids = request.GET.getlist('models')
     selected_models = AIModel.objects.filter(id__in=selected_ids).prefetch_related('plans')
@@ -192,6 +224,8 @@ def compare(request):
         'selected_models': selected_models, 'all_models': all_models,
     })
 
+
+# Favori toggle — ekle/çıkar, aktivite ve bildirim kaydeder
 @login_required
 def toggle_favorite(request, pk):
     ai_model = get_object_or_404(AIModel, pk=pk)
@@ -219,11 +253,15 @@ def toggle_favorite(request, pk):
         )
     return redirect('model_detail', pk=pk)
 
+
+# Kullanıcının favori modelleri — select_related ile optimize edilmiş sorgu
 @login_required
 def favorites(request):
     favs = UserFavorite.objects.filter(user=request.user).select_related('model')
     return render(request, 'models_app/favorites.html', {'favs': favs})
 
+
+# HuggingFace trending modelleri — 10 dk önbellek
 def trending(request):
     hf_models = cache.get('hf_trending')
     if not hf_models:
@@ -231,6 +269,8 @@ def trending(request):
         cache.set('hf_trending', hf_models, 60 * 10)
     return render(request, 'models_app/trending.html', {'hf_models': hf_models})
 
+
+# HuggingFace model detay sayfası — model ID ile önbellekli sorgu
 def model_hf_detail(request, model_id):
     cache_key = f'hf_model_{model_id}'
     hf_model = cache.get(cache_key)
@@ -239,6 +279,8 @@ def model_hf_detail(request, model_id):
         cache.set(cache_key, hf_model, 60 * 10)
     return render(request, 'models_app/hf_detail.html', {'hf_model': hf_model})
 
+
+# AI haberleri — NewsAPI entegrasyonu, 30 dk önbellek
 def news(request):
     articles = cache.get('ai_news')
     if not articles:
@@ -246,6 +288,8 @@ def news(request):
         cache.set('ai_news', articles, 60 * 30)
     return render(request, 'models_app/news.html', {'articles': articles})
 
+
+# Model öneri sistemi — kullanım amacı, bütçe ve multimodal ihtiyacına göre filtreler
 def recommend(request):
     use_case = request.GET.get('use_case', '')
     budget = request.GET.get('budget', '')
@@ -277,15 +321,19 @@ def recommend(request):
         'budget': budget, 'need_multimodal': need_multimodal,
     })
 
+
+# İstatistik sayfası — toplam model, kullanıcı, yorum, favori sayıları
 def stats(request):
     total_models = AIModel.objects.filter(category='model').count()
     total_tools = AIModel.objects.filter(category='tool').count()
     total_reviews = Review.objects.count()
     total_users = User.objects.count()
     total_favorites = UserFavorite.objects.count()
+    # En yüksek puanlı modeller (annotate ile hesaplanır)
     top_models = AIModel.objects.filter(category='model').annotate(
         avg_rating=Avg('reviews__rating'), num_reviews=Count('reviews')
     ).filter(num_reviews__gt=0).order_by('-avg_rating')[:10]
+    # En çok favorilenen modeller
     most_favorited = AIModel.objects.annotate(
         fav_count=Count('userfavorite')
     ).order_by('-fav_count')[:10]
@@ -296,24 +344,34 @@ def stats(request):
         'most_favorited': most_favorited,
     })
 
+
+# REST API ViewSet — tüm CRUD işlemleri, arama endpoint'i dahil
 class AIModelViewSet(viewsets.ModelViewSet):
+    """AI modelleri için REST API. Listeleme, detay, arama destekler."""
     queryset = AIModel.objects.all()
     serializer_class = AIModelSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=False, methods=['get'])
     def search(self, request):
+        """Model adı veya şirkete göre arama yapar."""
         q = request.query_params.get('q', '')
         models = AIModel.objects.filter(Q(name__icontains=q) | Q(company__icontains=q))
         serializer = self.get_serializer(models, many=True)
         return Response(serializer.data)
 
+
+# Benchmark REST API ViewSet
 class BenchmarkViewSet(viewsets.ModelViewSet):
+    """Model benchmark sonuçları için REST API."""
     queryset = Benchmark.objects.all()
     serializer_class = BenchmarkSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
+# Fiyat geçmişi REST API ViewSet
 class PriceHistoryViewSet(viewsets.ModelViewSet):
+    """Model fiyat geçmişi için REST API."""
     queryset = PriceHistory.objects.all()
     serializer_class = PriceHistorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

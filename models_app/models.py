@@ -1,3 +1,11 @@
+"""
+ModelArena - Ana Veri Modelleri
+================================
+Bu modül ModelArena platformunun tüm veritabanı modellerini içerir.
+AI modelleri, kullanıcı profilleri, yorumlar, favoriler,
+bildirimler, aktiviteler ve güvenlik logları burada tanımlanmıştır.
+"""
+
 import os
 import uuid
 from django.db import models
@@ -11,12 +19,13 @@ from django.utils.text import slugify
 
 
 def avatar_upload_path(instance, filename):
-    # Dosya adını güvenli hale getir (Türkçe/özel karakterleri temizle)
+    """Dosya adını UUID ile güvenli hale getirir (Türkçe/özel karakterleri temizler)."""
     ext = filename.split('.')[-1].lower()
     safe_name = f"{uuid.uuid4().hex[:12]}.{ext}"
     return f"avatars/{safe_name}"
 
 
+# Kullanıcı profil modeli — User ile OneToOne ilişki, signal ile otomatik oluşur
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True)
@@ -25,6 +34,8 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} profili"
 
+
+# Kullanıcı bildirim modeli — giriş, favori, öneri gibi olaylar için
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     message = models.TextField()
@@ -35,6 +46,8 @@ class Notification(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.message[:50]}"
 
+
+# Kullanıcı aktivite geçmişi — yorum, favori, karşılaştırma, öneri işlemleri
 class UserActivity(models.Model):
     ACTIVITY_TYPES = [
         ('review', 'Yorum Yapıldı'),
@@ -55,6 +68,8 @@ class UserActivity(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.activity_type}"
 
+
+# Signal: Yeni kullanıcı kaydında otomatik profil, bildirim ve admin maili oluşturur
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -75,6 +90,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         except:
             pass
 
+
+# Signal: Kullanıcı güncellenince profili de kaydet
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     try:
@@ -82,6 +99,8 @@ def save_user_profile(sender, instance, **kwargs):
     except UserProfile.DoesNotExist:
         UserProfile.objects.create(user=instance)
 
+
+# Ana AI model/araç modeli — fiyat, benchmark, özellik bilgilerini tutar
 class AIModel(models.Model):
     CATEGORY_CHOICES = [
         ('model', 'AI Model'),
@@ -112,18 +131,21 @@ class AIModel(models.Model):
 
     @property
     def input_price_per_million(self):
+        """1 milyon token başına input fiyatını döndürür."""
         if self.input_price:
             return round(float(self.input_price) * 1_000_000, 2)
         return 0
 
     @property
     def output_price_per_million(self):
+        """1 milyon token başına output fiyatını döndürür."""
         if self.output_price:
             return round(float(self.output_price) * 1_000_000, 2)
         return 0
 
     @property
     def average_rating(self):
+        """Tüm yorumların ortalama puanını hesaplar."""
         reviews = self.reviews.all()
         if reviews:
             return round(sum(r.rating for r in reviews) / len(reviews), 1)
@@ -131,16 +153,21 @@ class AIModel(models.Model):
 
     @property
     def review_count(self):
+        """Toplam yorum sayısını döndürür."""
         return self.reviews.count()
 
     @property
     def strengths_list(self):
+        """Virgülle ayrılmış güçlü yönleri liste olarak döndürür."""
         return [s.strip() for s in self.strengths.split(',') if s.strip()]
 
     @property
     def weaknesses_list(self):
+        """Virgülle ayrılmış zayıf yönleri liste olarak döndürür."""
         return [w.strip() for w in self.weaknesses.split(',') if w.strip()]
 
+
+# Model abonelik planları — ücretsiz/ücretli plan seçenekleri
 class SubscriptionPlan(models.Model):
     model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='plans')
     name = models.CharField(max_length=200)
@@ -153,8 +180,11 @@ class SubscriptionPlan(models.Model):
 
     @property
     def feature_list(self):
+        """Virgülle ayrılmış özellikleri liste olarak döndürür."""
         return [f.strip() for f in self.features.split(',') if f.strip()]
 
+
+# Model benchmark sonuçları — MMLU, HumanEval gibi test puanları
 class Benchmark(models.Model):
     model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='benchmarks')
     benchmark_name = models.CharField(max_length=200)
@@ -165,6 +195,8 @@ class Benchmark(models.Model):
     def __str__(self):
         return f"{self.model.name} - {self.benchmark_name}"
 
+
+# Fiyat geçmişi — tarihsel fiyat değişimlerini takip eder
 class PriceHistory(models.Model):
     model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='price_history')
     date = models.DateField()
@@ -174,6 +206,8 @@ class PriceHistory(models.Model):
     def __str__(self):
         return f"{self.model.name} - {self.date}"
 
+
+# Kullanıcı favori modeli — unique_together ile çift favori engellenir
 class UserFavorite(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     model = models.ForeignKey(AIModel, on_delete=models.CASCADE)
@@ -185,6 +219,8 @@ class UserFavorite(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.model.name}"
 
+
+# Kullanıcı yorum modeli — unique_together ile bir kullanıcı bir modele tek yorum yapabilir
 class Review(models.Model):
     model = models.ForeignKey(AIModel, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
@@ -199,6 +235,7 @@ class Review(models.Model):
         return f"{self.user.username} - {self.model.name} - {self.rating}"
 
 
+# Yorum beğeni modeli — unique_together ile çift beğeni engellenir
 class ReviewLike(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -211,6 +248,7 @@ class ReviewLike(models.Model):
         return f"{self.user.username} - {self.review.pk}"
 
 
+# Güvenlik olayları kaydı — giriş denemeleri ve şüpheli aktiviteler izlenir
 class SecurityLog(models.Model):
     ip_address = models.GenericIPAddressField()
     username = models.CharField(max_length=200, blank=True)
